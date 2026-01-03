@@ -1,6 +1,4 @@
 # Configure Django settings
-import os
-import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -12,7 +10,13 @@ SECRET_KEY = "django-insecure-7j%ml@4y8v#p27$^k(m@3z=w5hs-rb!r3$u5gj@qe8*xf^n9zk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "www.silabuslms.com",
+    "silabuslms.com",
+    "constantinoprea.pythonanywhere.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 # Application definition
 
