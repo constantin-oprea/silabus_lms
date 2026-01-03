@@ -2051,6 +2051,7 @@ body.new-dashboard-layout {
 }
 .mt-16 {
     margin-top: 16px;
+}
 
 /* ADDED FOR ANALYTICS CAROUSEL */
 .analytics-grid {
@@ -2161,4 +2162,170 @@ body.new-dashboard-layout {
 .student-select-course {
     font-size: 12px;
     color: #888;
+}
+
+/* ===== D3.JS ANALYTICS STYLES ===== */
+
+/* D3 Chart Containers */
+.d3-chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.d3-chart-line {
+    min-height: 180px;
+}
+
+.d3-svg-responsive {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* D3 Tooltip */
+.d3-tooltip {
+    position: fixed;
+    background: rgba(0, 31, 63, 0.9);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 200px;
+}
+
+.d3-tooltip strong {
+    color: #CCFF00;
+}
+
+/* Analytics Controls Panel */
+.analytics-controls-body {
+    padding: 15px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.filter-group .analytics-filter-select {
+    width: 100%;
+}
+
+/* Grade Legend */
+.grade-legend {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+}
+
+.grade-legend h5 {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.legend-ad { background: #2E5D4B; }
+.legend-a { background: #4A8B6F; }
+.legend-b { background: #5A9CB5; }
+.legend-c { background: #F4A460; }
+.legend-d { background: #E57373; }
+
+/* Chart Header Hint */
+.chart-hint {
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Selected Grade Info */
+.selected-info {
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+.selected-info strong {
+    color: #2E5D4B;
+}
+
+/* Sunburst Center Text */
+.sunburst-center-text,
+.sunburst-center-value {
+    pointer-events: none;
+}
+
+/* D3 Axis Styling */
+#participationLineChart .domain,
+#participationLineChart .tick line {
+    stroke: #ddd;
+}
+
+#participationLineChart .tick text {
+    fill: #888;
+    font-size: 10px;
+}
+
+/* Responsive Adjustments for Analytics */
+@media (max-width: 992px) {
+    #analytics-controls,
+    #main-sunburst-container,
+    #workload-timeline {
+        margin-bottom: 15px;
+    }
+    
+    .d3-chart-container {
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .analytics-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .chart-hint {
+        display: none;
+    }
 }

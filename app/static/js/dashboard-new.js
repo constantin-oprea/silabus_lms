@@ -378,7 +378,9 @@ function initAddCourseModal() {
                 alert('Please enter a course name');
                 return;
             }
-            // TODO: Save course to database
+            // Call API to save course to database
+            const courseRoom = document.getElementById('courseRoom')?.value || '';
+            fetch('/api/courses', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: courseName, room: courseRoom }) }).then(r => r.json()).then(c => { if (typeof serverCoursesData !== 'undefined') serverCoursesData.push(c); renderCourses(); setTimeout(() => initCoursesCarousel(), 100); alert('Course created!'); }).catch(() => alert('Failed'));
             console.log('Course saved:', courseName);
             closeModal();
         });
