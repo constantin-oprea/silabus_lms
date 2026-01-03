@@ -1,0 +1,49 @@
+<!-- LEFT SIDEBAR - Navigation + Top 10 Students -->
+{% load static %}
+
+<div class="sidebar-nav d-flex flex-column h-100">
+    <!-- Navigation Menu -->
+    <nav class="sidebar-menu">
+        <a href="{% url 'dashboard:dashboard' %}" data-tooltip="Dashboard"
+            class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-grid"></i>
+            <span class="sidebar-text">Dashboard</span>
+        </a>
+        <a href="{% url 'dashboard:schedule' %}" data-tooltip="Schedule"
+            class="sidebar-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
+            <i class="bi bi-calendar"></i>
+            <span class="sidebar-text">Schedule</span>
+        </a>
+        <a href="{% url 'lessons:lesson_plans' %}" data-tooltip="Lesson Plans"
+            class="sidebar-link {% if request.resolver_match.url_name == 'lesson_plans' %}active{% endif %}">
+            <i class="bi bi-file-text"></i>
+            <span class="sidebar-text">Lesson Plans</span>
+        </a>
+        <a href="{% url 'students:students' %}" data-tooltip="Students"
+            class="sidebar-link {% if request.resolver_match.url_name == 'students' %}active{% endif %}">
+            <i class="bi bi-people"></i>
+            <span class="sidebar-text">Students</span>
+        </a>
+        <a href="{% url 'students:grades' %}" data-tooltip="Grades"
+            class="sidebar-link {% if request.resolver_match.url_name == 'grades' %}active{% endif %}">
+            <i class="bi bi-award"></i>
+            <span class="sidebar-text">Grades</span>
+        </a>
+        <a href="#" data-tooltip="Forum" class="sidebar-link">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="sidebar-text">Forum</span>
+        </a>
+        <a href="#" data-tooltip="Analytics" class="sidebar-link">
+            <i class="bi bi-bar-chart"></i>
+            <span class="sidebar-text">Analytics</span>
+        </a>
+    </nav>
+
+    <!-- Top 10 Students (Moved from Right Panel) -->
+    <div class="sidebar-students-section">
+        <h4 class="sidebar-section-title">Top 10 Students</h4>
+        <div class="sidebar-students-list" id="sidebarTopStudentsList">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+</div>

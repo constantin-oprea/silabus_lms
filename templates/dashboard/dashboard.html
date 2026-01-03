@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- MY COURSES SECTION -->
+<div class="courses-section">
+    <div class="courses-section-header">
+        <h3 class="section-title">My Courses</h3>
+        <div class="courses-header-actions">
+            <button type="button" class="add-course-btn" id="addCourseBtn" title="Add Course" aria-label="Add Course">
+                <i class="fas fa-plus"></i> New course
+            </button>
+        </div>
+    </div>
+    <div class="courses-carousel-wrapper">
+        <div class="courses-grid" id="coursesGrid">
+            <!-- Course cards rendered by JS -->
+        </div>
+        <div class="carousel-nav-bottom-right">
+            <button type="button" class="carousel-nav-btn" id="coursesPrev" title="Previous" aria-label="Previous">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" class="carousel-nav-btn" id="coursesNext" title="Next" aria-label="Next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- STUDENT PERFORMANCE ANALYTICS -->
+<div class="analytics-section">
+    <div class="analytics-section-header">
+        <h3 class="section-title">Student Performance Analytics</h3>
+    </div>
+    <div class="analytics-grid">
+        <!-- GRADING CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Grading Distribution</h4>
+                <div class="analytics-filters">
+                    <select id="gradingCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="gradingDateFilter" class="analytics-filter-select">
+                        <option value="week" selected>Last Week</option>
+                        <option value="2weeks">Last 2 Weeks</option>
+                        <option value="3weeks">Last 3 Weeks</option>
+                        <option value="month">Last Month</option>
+                        <option value="2months">Last 2 Months</option>
+                        <option value="semester1">Semester 1</option>
+                        <option value="semester2">Semester 2</option>
+                    </select>
+                    <select id="gradingStudentFilter" class="analytics-filter-select">
+                        <option value="all" selected>All Students</option>
+                        <option value="one">One Student</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="gradingChart"></canvas>
+            </div>
+        </div>
+
+        <!-- PARTICIPATION CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Class Participation</h4>
+                <div class="analytics-filters">
+                    <select id="participationCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="participationDateFilter" class="analytics-filter-select">
+                        <option value="week" selected>Last Week</option>
+                        <option value="2weeks">Last 2 Weeks</option>
+                        <option value="3weeks">Last 3 Weeks</option>
+                        <option value="month">Last Month</option>
+                        <option value="2months">Last 2 Months</option>
+                        <option value="semester1">Semester 1</option>
+                        <option value="semester2">Semester 2</option>
+                    </select>
+                    <select id="participationStudentFilter" class="analytics-filter-select">
+                        <option value="all" selected>All Students</option>
+                        <option value="one">One Student</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="participationChart"></canvas>
+            </div>
+        </div>
+
+        <!-- HOMEWORK CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Homework Completion</h4>
+                <div class="analytics-filters">
+                    <select id="homeworkCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="homeworkDateFilter" class="analytics-filter-select">
+                        <option value="week" selected>Last Week</option>
+                        <option value="2weeks">Last 2 Weeks</option>
+                        <option value="3weeks">Last 3 Weeks</option>
+                        <option value="month">Last Month</option>
+                        <option value="2months">Last 2 Months</option>
+                        <option value="semester1">Semester 1</option>
+                        <option value="semester2">Semester 2</option>
+                    </select>
+                    <select id="homeworkStudentFilter" class="analytics-filter-select">
+                        <option value="all" selected>All Students</option>
+                        <option value="one">One Student</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="homeworkChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD COURSE MODAL -->
+<div class="modal-overlay" id="addCourseModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Course</h2>
+            <button type="button" class="modal-close" id="closeAddCourseModal" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Course Name <span class="required">*</span></label>
+                <input type="text" id="courseName" placeholder="e.g., Advanced Philosophy" class="form-input">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date <span class="required">*</span></label>
+                    <div class="date-picker-wrapper">
+                        <input type="text" id="courseStartDate" placeholder="03-Mar-26" class="form-input date-input"
+                            readonly>
+                        <i class="fas fa-calendar-alt date-icon"></i>
+                        <div class="date-picker-dropdown" id="startDatePicker"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>End Date <span class="required">*</span></label>
+                    <div class="date-picker-wrapper">
+                        <input type="text" id="courseEndDate" placeholder="12-Dec-26" class="form-input date-input"
+                            readonly>
+                        <i class="fas fa-calendar-alt date-icon"></i>
+                        <div class="date-picker-dropdown" id="endDatePicker"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Room <span class="required">*</span></label>
+                    <input type="text" id="courseRoom" placeholder="III A, High School" class="form-input">
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Schedule <span class="required">*</span></label>
+                <div class="schedule-list" id="scheduleList">
+                    <div class="schedule-row">
+                        <div class="day-group">
+                            <span class="day-label">Day</span>
+                            <select class="form-select schedule-day">
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                            </select>
+                        </div>
+                        <div class="time-group">
+                            <span class="time-label">Start</span>
+                            <div class="time-input-row">
+                                <input type="text" class="form-input time-input-small" placeholder="08:15">
+                                <div class="ampm-toggle">
+                                    <button type="button" class="ampm-btn active" data-value="AM">AM</button>
+                                    <button type="button" class="ampm-btn" data-value="PM">PM</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="time-group">
+                            <span class="time-label">End</span>
+                            <div class="time-input-row">
+                                <input type="text" class="form-input time-input-small" placeholder="09:45">
+                                <div class="ampm-toggle">
+                                    <button type="button" class="ampm-btn active" data-value="AM">AM</button>
+                                    <button type="button" class="ampm-btn" data-value="PM">PM</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="schedule-delete-btn" title="Remove" aria-label="Remove">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="add-schedule-btn" id="addScheduleRow">
+                    <i class="fas fa-plus"></i> Add Class Time
+                </button>
+                <p class="form-hint">Add a different time for each day if needed.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancelAddCourse">Cancel</button>
+            <button type="button" class="btn-save" id="saveNewCourse">Create Course</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div class="modal-overlay" id="addEventModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Event</h2>
+            <button type="button" class="modal-close" id="closeAddEventModal" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Event Name -->
+            <div class="form-group">
+                <label>Event Name <span class="required">*</span></label>
+                <input type="text" id="eventName" placeholder="e.g., Parent-Teacher Conference" class="form-input">
+            </div>
+
+            <!-- Date and Time -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date <span class="required">*</span></label>
+                    <div class="date-picker-wrapper">
+                        <input type="text" id="eventDate" placeholder="27-Dec-25" class="form-input date-input"
+                            readonly>
+                        <i class="fas fa-calendar-alt date-icon"></i>
+                        <div class="date-picker-dropdown" id="eventDatePicker"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Start Time <span class="required">*</span></label>
+                    <div class="time-input-row">
+                        <input type="text" id="eventTime" class="form-input time-input-medium" placeholder="10:00">
+                        <div class="ampm-toggle">
+                            <button type="button" class="ampm-btn active" data-value="AM">AM</button>
+                            <button type="button" class="ampm-btn" data-value="PM">PM</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="form-group">
+                <label>Duration</label>
+                <div class="duration-row">
+                    <input type="number" id="eventDuration" class="form-input duration-input" placeholder="60" min="5"
+                        step="5">
+                    <span class="duration-label">minutes</span>
+                </div>
+            </div>
+
+            <!-- Event Type -->
+            <div class="form-group">
+                <label>Event Type <span class="required">*</span></label>
+                <div class="event-type-options">
+                    <label class="checkbox-option">
+                        <input type="radio" name="eventType" value="meeting" checked>
+                        <span class="checkbox-label">Meeting</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="radio" name="eventType" value="oral_presentation">
+                        <span class="checkbox-label">Oral Presentation</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="radio" name="eventType" value="exam">
+                        <span class="checkbox-label">Exam / Test / Quiz</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="radio" name="eventType" value="homework">
+                        <span class="checkbox-label">Homework</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Participants -->
+            <div class="form-group">
+                <label>Participants <span class="optional">(optional)</span></label>
+                <textarea id="eventParticipants" class="form-input form-textarea"
+                    placeholder="Enter names, one per line..."></textarea>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+                <label>Notes <span class="optional">(optional)</span></label>
+                <textarea id="eventNotes" class="form-input form-textarea"
+                    placeholder="Add any additional details about this event..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancelAddEvent">Cancel</button>
+            <button type="button" class="btn-save" id="saveNewEvent">Create Event</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- STUDENT SELECTION MODAL (for Analytics Filters) -->
+<div class="modal-overlay" id="studentSelectModal">
+    <div class="modal-content modal-small">
+        <div class="modal-header">
+            <h2>Select Student</h2>
+            <button type="button" class="modal-close" id="closeStudentSelectModal" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Error message when no course selected -->
+            <div class="student-select-error" id="studentSelectError" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Please select a specific course first before filtering by student.</p>
+            </div>
+            <!-- Student list -->
+            <div class="student-select-list" id="studentSelectList">
+                <!-- Students will be populated by JS -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancelStudentSelect">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="serverStudentsJSON">
+    {{ students_json|safe }}
+</script>
+<script type="application/json" id="serverEventsJSON">
+    {{ events_json|safe }}
+</script>
+<script type="application/json" id="serverCoursesJSON">
+    {{ courses_json|safe }}
+</script>
+
+<script>
+    const serverStudentsData = JSON.parse(document.getElementById('serverStudentsJSON').textContent);
+    const serverEventsData = JSON.parse(document.getElementById('serverEventsJSON').textContent);
+    const serverCoursesData = JSON.parse(document.getElementById('serverCoursesJSON').textContent);
+</script>
+{% endblock %}

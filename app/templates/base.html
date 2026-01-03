@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCOLA | See. Know. Wonder.</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon_scola_official.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-new.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/students-new.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Josefin+Sans:wght@300;400;600&family=Playfair+Display:wght@600;700&family=Cinzel:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="new-dashboard-layout {% block body_class %}{% endblock %}">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-nav">
+        <div class="top-nav-left">
+            <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-logo">
+                <img src="{{ url_for('static', filename='images/SCOLA_Logo_Official.png') }}"
+                    alt="SCOLA - See. Know. Wonder." class="nav-logo-img">
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('dashboard.dashboard_view') }}"
+                    class="{{ 'active' if request.endpoint == 'dashboard.dashboard_view' else '' }}">Dashboard</a>
+                <a href="{{ url_for('dashboard.schedule_view') }}"
+                    class="{{ 'active' if request.endpoint == 'dashboard.schedule_view' else '' }}">Schedule</a>
+                <a href="{{ url_for('lesson_plans.lesson_plans_view') }}"
+                    class="{{ 'active' if request.endpoint == 'lesson_plans.lesson_plans_view' else '' }}">Lesson
+                    Plans</a>
+                <a href="{{ url_for('students.students_view') }}"
+                    class="{{ 'active' if request.endpoint == 'students.students_view' else '' }}">Students</a>
+                <a href="{{ url_for('students.grades_view') }}"
+                    class="{{ 'active' if request.endpoint == 'students.grades_view' else '' }}">Grades</a>
+                <a href="#">Forum</a>
+                <a href="#">Analytics</a>
+            </nav>
+        </div>
+        <div class="top-nav-right">
+            <div class="notification-wrapper" id="notificationWrapper">
+                <button type="button" class="nav-icon-btn" id="notificationBtn" aria-label="Notifications"><i
+                        class="fas fa-bell"></i></button>
+                <span class="notification-badge" id="notificationBadge"></span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-dropdown-header">
+                        <h4>Notifications</h4>
+                        <button type="button" class="mark-all-read" id="markAllRead">Mark all read</button>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date/Time (separate from profile) -->
+            <span class="nav-datetime" id="navDateTime">27-Dec-24 18:22</span>
+
+            <!-- User Profile with Dropdown -->
+            <div class="user-profile-nav">
+                <button type="button" class="profile-trigger" id="profileTrigger" aria-label="User profile menu">
+                    <img src="{{ url_for('static', filename='images/admin_user.jpg') }}" class="nav-avatar"
+                        alt="User avatar">
+
+                </button>
+                <!-- Dropdown Menu -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{{ url_for('settings.settings_view') }}" class="dropdown-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="{{ url_for('settings.settings_view') }}" class="dropdown-item">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('auth.login_page') }}" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT WRAPPER -->
+    <div class="dashboard-wrapper">
+        <!-- MAIN CONTENT AREA -->
+        <main class="dashboard-main">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="right-sidebar">
+            <!-- CALENDAR WIDGET -->
+            <div class="sidebar-section calendar-section">
+                <div class="sidebar-section-header">
+                    <h3 id="calendarMonthTitle">December 2024</h3>
+                    <div class="calendar-nav">
+                        <button type="button" id="calPrev" aria-label="Previous month"><i
+                                class="fas fa-chevron-left"></i></button>
+                        <button type="button" id="calNext" aria-label="Next month"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="month-calendar">
+                    <div class="calendar-weekdays">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                    <div class="calendar-days-grid" id="calendarDaysGrid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP 10 STUDENTS -->
+            <div class="sidebar-section students-section">
+                <h3>Top 10 Students</h3>
+                <div class="students-list" id="topStudentsList">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard-new.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block body_class %}students-page{% endblock %}
+
+{% block content %}
+<div class="students-page-wrapper">
+    <!-- LEFT SIDEBAR - Student Directory (no icon nav) -->
+    <div class="students-left-sidebar no-icon-nav">
+        <div class="students-directory-content full-width">
+            <div class="course-filter-section">
+                <label class="course-filter-label">Course Filter</label>
+                <select class="course-filter-dropdown" id="courseFilterDropdown">
+                    <option value="all">All Courses</option>
+                    <option value="Philosophy">Philosophy</option>
+                    <option value="Social Studies">Social Studies</option>
+                    <option value="Psychology">Psychology</option>
+                </select>
+            </div>
+            <div class="students-list-container" id="studentsListContainer">
+                <!-- Student cards rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CENTER - Student Report Card -->
+    <div class="student-report-main">
+        <div class="report-card-container">
+            <h1 class="report-card-title">Student Report Card</h1>
+
+            <!-- Student Header Card (Gold) -->
+            <div class="student-header-card" id="studentHeaderCard">
+                <img src="" alt="" class="student-header-avatar" id="headerAvatar">
+                <div class="student-header-info">
+                    <div class="header-main-row">
+                        <h2 id="headerName">Select a Student</h2>
+                        <div class="header-profile-info">
+                            <div class="header-profile-item">
+                                <span class="hp-label">Birthday:</span>
+                                <span class="hp-value" id="profileBirthday">--</span>
+                            </div>
+                            <div class="header-profile-item">
+                                <span class="hp-label">Hobbies:</span>
+                                <span class="hp-value" id="profileHobbies">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="student-header-tags" id="headerTags">
+                        <span class="header-tag course-tag" id="headerCourseTag">--</span>
+                        <span class="header-tag special-tag">IB Candidate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grades & Activities (Full Width) -->
+            <div class="report-card-grid" style="grid-template-columns: 1fr;">
+                <!-- Inline style overload for immediate effect, will fix in CSS too -->
+                <div class="report-card-section grades-card">
+                    <div class="section-header">
+                        <h3>Current Grades & Activities</h3>
+                        <button class="pdf-btn" onclick="exportGradesToPDF()" title="Send to PDF">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                    </div>
+
+                    <div class="grades-rows-container" id="gradesRowsContainer">
+                        <!-- Homework Row -->
+                        <div class="grade-category-row">
+                            <div class="grade-cat-label">
+                                <h5>Homework</h5>
+                                <span class="grade-count" id="homeworkCount">(0 items)</span>
+                            </div>
+                            <div class="grade-items-horizontal" id="homeworkList">
+                                <!-- Dynamic items -->
+                            </div>
+                        </div>
+
+                        <!-- Quizzes Row -->
+                        <div class="grade-category-row">
+                            <div class="grade-cat-label">
+                                <h5>Quizzes</h5>
+                                <span class="grade-count" id="quizzesCount">(0 items)</span>
+                            </div>
+                            <div class="grade-items-horizontal" id="quizzesList">
+                                <!-- Dynamic items -->
+                            </div>
+                        </div>
+
+                        <!-- Tests Row -->
+                        <div class="grade-category-row">
+                            <div class="grade-cat-label">
+                                <h5>Tests</h5>
+                                <span class="grade-count" id="testsCount">(0 items)</span>
+                            </div>
+                            <div class="grade-items-horizontal" id="testsList">
+                                <!-- Dynamic items -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics + Social Circle Row -->
+            <div class="report-card-grid full-width">
+                <!-- Metrics -->
+                <div class="rc-new-card">
+                    <h4>Metrics</h4>
+                    <div class="metrics-row">
+                        <div class="metric-item">
+                            <span class="metric-label">Attendance</span>
+                            <span class="metric-value" id="metricAttendance">--%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Homework (Sent)</span>
+                            <span class="metric-value" id="metricHomework">--%</span>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="homeworkBarFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="participation-section">
+                        <span class="participation-label">CLASS PARTICIPATION</span>
+                        <div class="participation-slider-wrapper">
+                            <input type="range" min="0" max="2" value="1" class="participation-slider"
+                                id="participationSlider" disabled>
+                            <div class="participation-labels">
+                                <span id="labelLow">Low</span>
+                                <span id="labelMedium">Medium</span>
+                                <span id="labelHigh" class="active">High</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Circle -->
+                <div class="rc-new-card">
+                    <h4>Social Circle</h4>
+                    <div class="social-friends-list spaced" id="socialFriendsList">
+                        <!-- Friend avatars rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR - Calendar first, then Teacher's Log -->
+    <div class="students-right-sidebar">
+        <!-- Calendar (moved to top) -->
+        <div class="sidebar-section calendar-section">
+            <div class="sidebar-section-header">
+                <h3 id="calendarMonthTitle">December 2025</h3>
+                <div class="calendar-nav">
+                    <button id="studentCalPrev"><i class="fas fa-chevron-left"></i></button>
+                    <button id="studentCalNext"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="month-calendar">
+                <div class="calendar-weekdays">
+                    <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                </div>
+                <div class="calendar-days-grid" id="calendarDaysGrid">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher's Log (moved below calendar) -->
+        <div class="teachers-log-card">
+            <div class="teachers-log-header">
+                <h4>Teacher's Log</h4>
+                <button class="pdf-btn" title="Send to PDF" onclick="exportLogToPDF()">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+            </div>
+            <div class="log-entries" id="logEntries">
+                <!-- Log entries rendered by JS (max 4) -->
+            </div>
+            <button class="show-more-btn" id="showMoreLogsBtn" onclick="openLogsPopup()" style="display: none;">
+                Show More
+            </button>
+            <div class="log-input-area">
+                <textarea class="log-input" id="newLogInput" placeholder="Add a behavioral note..."></textarea>
+                <button class="add-note-btn" onclick="addLogNote()">Add Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event View Popup (shared with dashboard) -->
+<div class="event-view-popup-overlay" id="eventViewPopup">
+    <div class="event-view-popup">
+        <div class="event-view-popup-header">
+            <h3><i class="fas fa-calendar-day"></i> <span id="eventPopupDate">Events</span></h3>
+            <button class="event-popup-close" onclick="closeEventPopup()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="event-view-popup-body" id="eventPopupBody">
+            <!-- Events rendered by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Teacher's Log Full Popup -->
+<div class="modal-overlay" id="logsFullPopup">
+    <div class="modal-content logs-popup-content">
+        <div class="modal-header">
+            <h2>Teacher's Log History</h2>
+            <button class="modal-close" onclick="closeLogsPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body logs-popup-body">
+            <div class="logs-popup-layout">
+                <div class="logs-popup-calendar">
+                    <div class="logs-cal-header">
+                        <button onclick="navigateLogsCalendar(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span id="logsCalendarTitle">December 2025</span>
+                        <button onclick="navigateLogsCalendar(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="logs-cal-weekdays">
+                        <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                    </div>
+                    <div class="logs-cal-days" id="logsCalendarDays">
+                        <!-- Days rendered by JS -->
+                    </div>
+                </div>
+                <div class="logs-popup-entries">
+                    <h4>Recent Notes</h4>
+                    <div id="logsPopupList">
+                        <!-- Entries rendered by JS (max 7) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const serverStudentsData = {{ students_db | tojson }};
+    const serverEventsData = {{ events_db | tojson }};
+    const serverCoursesData = {{ courses_db | tojson if courses_db else '[]' | safe }};
+    const teacherFirstName = "{{ teacher_first_name | default('Demo') }}";
+</script>
+<script src="{{ url_for('static', filename='js/students-new.js') }}"></script>
+{% endblock %}

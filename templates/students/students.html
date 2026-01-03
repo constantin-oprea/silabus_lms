@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block body_class %}students-page{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/students-new.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- STUDENTS PAGE CONTENT - Uses global 3-column layout from base.html -->
+<div class="students-content-wrapper">
+    <!-- LEFT: Student Directory List -->
+    <div class="students-directory-panel">
+        <div class="course-filter-section">
+            <label class="course-filter-label">Course Filter</label>
+            <select class="course-filter-dropdown" id="courseFilterDropdown">
+                <option value="all">All Courses</option>
+                <option value="Philosophy">Philosophy</option>
+                <option value="Social Studies">Social Studies</option>
+                <option value="Psychology">Psychology</option>
+            </select>
+        </div>
+        <div class="students-list-container" id="studentsListContainer">
+            <!-- Student cards rendered by JS -->
+        </div>
+    </div>
+
+    <!-- CENTER: Student Report Card -->
+    <div class="student-report-main">
+        <div class="report-card-container">
+            <h1 class="report-card-title">Student Report Card</h1>
+
+            <!-- Student Header Card (Gold) -->
+            <div class="student-header-card" id="studentHeaderCard">
+                <img src="" alt="" class="student-header-avatar" id="headerAvatar">
+                <div class="student-header-info">
+                    <div class="header-main-row">
+                        <h2 id="headerName">Select a Student</h2>
+                        <div class="header-profile-info">
+                            <div class="header-profile-item">
+                                <span class="hp-label">Birthday:</span>
+                                <span class="hp-value" id="profileBirthday">--</span>
+                            </div>
+                            <div class="header-profile-item">
+                                <span class="hp-label">Hobbies:</span>
+                                <span class="hp-value" id="profileHobbies">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="student-header-tags" id="headerTags">
+                        <span class="header-tag course-tag" id="headerCourseTag">--</span>
+                        <span class="header-tag special-tag">IB Candidate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="rc-metrics-row">
+                <div class="rc-metric-card avg-card" id="avgCard">
+                    <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="metric-value" id="avgGrade">--</div>
+                    <div class="metric-label">Average Grade</div>
+                </div>
+                <div class="rc-metric-card attendance-card" id="attendanceCard">
+                    <div class="metric-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="metric-value" id="attendancePct">--</div>
+                    <div class="metric-label">Attendance</div>
+                </div>
+                <div class="rc-metric-card behavior-card" id="behaviorCard">
+                    <div class="metric-icon"><i class="fas fa-star"></i></div>
+                    <div class="metric-value" id="behaviorScore">--</div>
+                    <div class="metric-label">Behavior</div>
+                </div>
+            </div>
+
+            <!-- New Cards Section -->
+            <div class="rc-new-cards-section">
+                <!-- Metrics & Numbers -->
+                <div class="rc-new-card">
+                    <h4>Metrics & Numbers</h4>
+                    <div class="metrics-numbers-grid" id="metricsNumbersGrid">
+                        <div class="metric-number-item">
+                            <div class="metric-num-value" id="metricTotalCourses">--</div>
+                            <div class="metric-num-label">Courses</div>
+                        </div>
+                        <div class="metric-number-item">
+                            <div class="metric-num-value" id="metricTotalAssignments">--</div>
+                            <div class="metric-num-label">Assignments</div>
+                        </div>
+                        <div class="metric-number-item">
+                            <div class="metric-num-value" id="metricCompletedTasks">--</div>
+                            <div class="metric-num-label">Completed</div>
+                        </div>
+                        <div class="metric-number-item">
+                            <div class="metric-num-value" id="metricPendingTasks">--</div>
+                            <div class="metric-num-label">Pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="rc-new-card">
+                    <h4>Notifications</h4>
+                    <div class="notifications-list" id="studentNotificationsList">
+                        <!-- Notifications rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Graph -->
+                <div class="rc-new-card graph-card">
+                    <h4>Progress Chart</h4>
+                    <div class="student-graph-container">
+                        <canvas id="studentProgressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Social Circle -->
+                <div class="rc-new-card">
+                    <h4>Social Circle</h4>
+                    <div class="social-friends-list spaced" id="socialFriendsList">
+                        <!-- Friend avatars rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event View Popup -->
+<div class="event-view-popup-overlay" id="eventViewPopup">
+    <div class="event-view-popup">
+        <div class="event-view-popup-header">
+            <h3><i class="fas fa-calendar-day"></i> <span id="eventPopupDate">Events</span></h3>
+            <button type="button" class="event-popup-close" onclick="closeEventPopup()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="event-view-popup-body" id="eventPopupBody">
+            <!-- Events rendered by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Teacher's Log Full Popup -->
+<div class="modal-overlay" id="logsFullPopup">
+    <div class="modal-content logs-popup-content">
+        <div class="modal-header">
+            <h2>Teacher's Log History</h2>
+            <button type="button" class="modal-close" onclick="closeLogsPopup()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body logs-popup-body">
+            <div class="logs-popup-layout">
+                <div class="logs-popup-calendar">
+                    <div class="logs-cal-header">
+                        <button type="button" onclick="navigateLogsCalendar(-1)" aria-label="Previous month">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="logsCalendarTitle">December 2025</span>
+                        <button type="button" onclick="navigateLogsCalendar(1)" aria-label="Next month">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="logs-cal-weekdays">
+                        <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                    </div>
+                    <div class="logs-cal-days" id="logsCalendarDays">
+                        <!-- Days rendered by JS -->
+                    </div>
+                </div>
+                <div class="logs-popup-entries">
+                    <h4>Recent Notes</h4>
+                    <div id="logsPopupList">
+                        <!-- Entries rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const serverStudentsData = {{ students_json| safe }};
+    const serverEventsData = {{ events_json| safe }};
+    const serverCoursesData = {{ courses_json| safe }};
+    const teacherFirstName = "{{ teacher_first_name|default:'Demo' }}";
+</script>
+<script src="{% static 'js/students-new.js' %}"></script>
+{% endblock %}

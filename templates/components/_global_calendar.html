@@ -1,0 +1,37 @@
+<!-- GLOBAL CALENDAR COMPONENT - Single Source of Truth for SilabusLMS -->
+<!-- RIGHT SIDEBAR - Calendar + Top 10 Students -->
+<aside class="right-sidebar">
+    <!-- CALENDAR WIDGET -->
+    <div class="sidebar-section calendar-section">
+        <div class="sidebar-section-header">
+            <h3 id="calendarMonthTitle">December 2024</h3>
+            <div class="calendar-nav">
+                <button type="button" id="calPrev" aria-label="Previous month">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" id="calNext" aria-label="Next month">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="month-calendar">
+            <div class="calendar-weekdays">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP 10 STUDENTS -->
+    <div class="sidebar-section students-section">
+        <h3>Top 10 Students</h3>
+        <div class="students-list" id="topStudentsList">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+</aside>
+
+<!-- Global Calendar Data -->
+<script id="globalCalendarData" type="application/json">{{ global_events_json|safe }}</script>

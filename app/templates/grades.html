@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block body_class %}grades-page students-page{% endblock %}
+{# Adding 'students-page' class to reuse sidebar layout styles from students-new.css #}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/students-new.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grades-new.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="students-page-wrapper">
+    <!-- LEFT SIDEBAR - Student Directory (Reuse from Students) -->
+    <div class="students-left-sidebar no-icon-nav">
+        <div class="students-directory-content full-width">
+            <div class="course-filter-section">
+                <label class="course-filter-label">Course</label>
+                <select class="course-filter-dropdown" id="courseFilterDropdown">
+                    <option value="all">All Courses</option>
+                    <option value="Philosophy">Philosophy</option>
+                    <option value="Social Studies">Social Studies</option>
+                    <option value="Psychology">Psychology</option>
+                </select>
+            </div>
+            <div class="students-list-container" id="studentsListContainer">
+                <!-- Data populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CENTER - GRADING INTERFACE -->
+    <div class="student-report-main">
+        <div class="report-card-container">
+
+            <!-- Student Header (Gold Ribbon - Reused style) -->
+            <div class="student-header-card" id="studentHeaderCard">
+                <img src="#" alt="Student Avatar" class="student-header-avatar" id="headerAvatar">
+                <div class="student-header-info">
+                    <div class="header-main-row">
+                        <h2 id="headerName">Select a Student</h2>
+                    </div>
+                    <div class="student-header-tags" id="headerTags">
+                        <span class="header-tag course-tag" id="headerCourseTag">--</span>
+                        <span class="header-tag special-tag">IB Candidate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grades Matrix Section -->
+            <div class="grading-section">
+                <div class="grading-header-row">
+                    <h2 class="grading-title" id="gradingTitle">Philosophy Grades</h2>
+                    <button type="button" class="add-col-btn" onclick="addGradeColumn()">Add new column</button>
+                </div>
+
+                <div class="grading-matrix-container">
+                    <table class="grading-matrix" id="gradingMatrix">
+                        <thead>
+                            <tr>
+                                <th class="row-header"></th> <!-- Empty top-left -->
+                                <!-- Date Headers rendered by JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="gradingBody">
+                            <!-- Rows rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grading-footer">
+                    <button type="button" class="add-eval-btn" onclick="addEvaluationRow()">+ Add Evaluation</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR (Reuse from Students) -->
+    <div class="students-right-sidebar">
+        <!-- Teacher's Log -->
+        <div class="teachers-log-card">
+            <div class="teachers-log-header">
+                <h4>Teacher's Log</h4>
+                <button type="button" class="pdf-btn" title="Send to PDF" onclick="exportLogToPDF()">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+            </div>
+            <div class="log-entries" id="logEntries">
+                <!-- Log entries rendered by JS -->
+            </div>
+            <button type="button" class="show-more-btn" id="showMoreLogsBtn" onclick="openLogsPopup()"
+                style="display: none;">
+                Show More
+            </button>
+            <div class="log-input-area">
+                <textarea class="log-input" id="newLogInput" placeholder="Add a behavioral note..."></textarea>
+                <button type="button" class="add-note-btn" onclick="addLogNote()">Add Note</button>
+            </div>
+        </div>
+
+        <!-- Calendar (Moved to bottom in this view? User img shows Log top, Calendar bottom) -->
+        <!-- User image shows Log on top, Calendar on bottom. Unlike Students page refinement where we swapped. -->
+        <!-- I will follow the user image for this page. -->
+        <div class="sidebar-section calendar-section calendar-section-margin">
+            <div class="sidebar-section-header">
+                <h3 id="calendarMonthTitle">December 2025</h3>
+                <div class="calendar-nav">
+                    <button type="button" id="studentCalPrev" aria-label="Previous Month"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <button type="button" id="studentCalNext" aria-label="Next Month"><i
+                            class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="month-calendar">
+                <div class="calendar-weekdays">
+                    <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                </div>
+                <div class="calendar-days-grid" id="calendarDaysGrid">
+                    <!-- Rendered by JS -->
+                </div>
+                <!-- Upcoming events list can be here or separate -->
+                <div class="upcoming-events-list" id="calendarUpcomingEvents">
+                    <h5 class="upcoming-events-title">Upcoming Events</h5>
+                    <!-- Simple list items -->
+                    <div class="mini-event-item">Consenuartor - School <span class="event-date">May
+                            11</span></div>
+                    <div class="mini-event-item">Consenuarter - Studist <span class="event-date">Apr
+                            5</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event View Popup (Reuse) -->
+<div class="event-view-popup-overlay" id="eventViewPopup">
+    <div class="event-view-popup">
+        <div class="event-view-popup-header">
+            <h3><i class="fas fa-calendar-day"></i> <span id="eventPopupDate">Events</span></h3>
+            <button type="button" class="event-popup-close" onclick="closeEventPopup()" aria-label="Close"><i
+                    class="fas fa-times"></i></button>
+        </div>
+        <div class="event-view-popup-body" id="eventPopupBody"></div>
+    </div>
+</div>
+
+<!-- Logs Popup (Reuse) -->
+<div class="modal-overlay" id="logsFullPopup">
+    <!-- Same structure as students.html for consistency, can copy or include if I made partials -->
+    <div class="modal-content logs-popup-content">
+        <div class="modal-header">
+            <h2>Teacher's Log History</h2>
+            <button type="button" class="modal-close" onclick="closeLogsPopup()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body logs-popup-body">
+            <div class="logs-popup-layout">
+                <div class="logs-popup-calendar">
+                    <div class="logs-cal-header">
+                        <button type="button" onclick="navigateLogsCalendar(-1)" aria-label="Previous Month"><i
+                                class="fas fa-chevron-left"></i></button>
+                        <span id="logsCalendarTitle">December 2025</span>
+                        <button type="button" onclick="navigateLogsCalendar(1)" aria-label="Next Month"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="logs-cal-weekdays">
+                        <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                    </div>
+                    <div class="logs-cal-days" id="logsCalendarDays"></div>
+                </div>
+                <div class="logs-popup-entries">
+                    <h4>Recent Notes</h4>
+                    <div id="logsPopupList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script id="server-students-data" type="application/json">{{ students_db | tojson}}</script>
+<script id="server-events-data" type="application/json">{{ events_db | tojson }}</script>
+<script id="server-courses-data"
+    type="application/json">{{ courses_db | tojson if courses_db else '[]' | safe }}</script>
+<script id="teacher-first-name" type="application/json">{{ teacher_first_name | default('Demo') | tojson }}</script>
+<script>
+    const serverStudentsData = JSON.parse(document.getElementById('server-students-data').textContent);
+    const serverEventsData = JSON.parse(document.getElementById('server-events-data').textContent);
+    const serverCoursesData = JSON.parse(document.getElementById('server-courses-data').textContent);
+    const teacherFirstName = JSON.parse(document.getElementById('teacher-first-name').textContent);
+</script>
+<script src="{{ url_for('static', filename='js/grades-new.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="lp-header-section">
+    <div class="lp-title-block">
+        <h1>Lesson Planner</h1>
+        <p>Design, track, and evaluate your class flow.</p>
+    </div>
+    
+    <div class="time-tracker-widget">
+        <div class="tt-icon"><i class="fas fa-stopwatch"></i></div>
+        <div class="tt-info">
+            <span class="tt-label">Total Planned Time</span>
+            <span class="tt-value" id="totalTimeDisplay">0 mins</span>
+        </div>
+    </div>
+</div>
+
+<div class="lp-container">
+    
+    <div class="lp-card">
+        <div class="lp-card-header">
+            <h4><i class="fas fa-info-circle"></i> General Information</h4>
+        </div>
+        
+        <div class="general-info-layout">
+            <div class="lp-form-grid">
+                <div class="form-group">
+                    <label>Course / Class</label>
+                    <select class="lp-input" id="courseSelect" onchange="updateScheduleInfo()">
+                        <option value="phil">Philosophy III A</option>
+                        <option value="soc4" selected>Social Studies 4th Primary</option>
+                        <option value="soc5">Social Studies Room V</option>
+                        <option value="psy">Psychology AP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lesson Topic</label>
+                    <input type="text" class="lp-input" placeholder="e.g. The Law of Reflection">
+                </div>
+                <div class="form-group">
+                    <label>Teacher</label>
+                    <input type="text" class="lp-input" value="{{ username }}" readonly>
+                </div>
+            </div>
+
+            <div class="session-selector-panel">
+                <label class="panel-label">Target Session(s)</label>
+                <p class="panel-desc">Select which session(s) this plan covers.</p>
+                
+                <div id="scheduleContainer" class="schedule-list">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lp-card">
+        <div class="lp-card-header">
+            <h4><i class="fas fa-bullseye"></i> Objectives & Context</h4>
+        </div>
+        <div class="lp-form-grid full">
+            <div class="form-group full-width">
+                <label>Learning Objectives</label>
+                <textarea class="lp-textarea auto-expand" 
+                          placeholder="What will students learn?" 
+                          rows="1" 
+                          oninput="autoResize(this)"></textarea>
+            </div>
+            
+            <div class="form-group full-width">
+                <label>Vocabulary / Terminology (Tags)</label>
+                <div class="vocab-box-wrapper">
+                    <textarea class="lp-textarea vocab-box auto-expand" 
+                              placeholder="Enter keywords (max 6 per line)..." 
+                              rows="1" 
+                              oninput="autoResize(this)"></textarea>
+                    <div class="vocab-hint">Used for search tags</div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Previous Learning / Context</label>
+                <textarea class="lp-textarea small auto-expand" 
+                          placeholder="Prerequisites..." 
+                          rows="1" 
+                          oninput="autoResize(this)"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="lp-card">
+        <div class="lp-card-header">
+            <h4><i class="fas fa-list-ol"></i> Activity Sequence</h4>
+            <button class="add-row-btn" onclick="addActivityRow()"><i class="fas fa-plus"></i> Add Activity</button>
+        </div>
+        
+        <table class="plan-table stylish-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px; text-align:center;">Mins</th>
+                    <th style="width: 50%;">Activity Description</th>
+                    <th style="width: 35%;">Resources / Files</th>
+                    <th style="width: 40px;"></th>
+                </tr>
+            </thead>
+            <tbody id="planTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="lp-card">
+        <div class="lp-card-header">
+            <h4><i class="fas fa-clipboard-check"></i> Reflection & Evaluation</h4>
+        </div>
+        <div class="lp-form-grid full">
+            <div class="form-group full-width">
+                <label>Were objectives realistic? What did students learn?</label>
+                <textarea class="lp-textarea auto-expand" 
+                          placeholder="Evaluation notes..." 
+                          rows="1" 
+                          oninput="autoResize(this)"></textarea>
+            </div>
+            
+            <div class="form-group full-width">
+                <label>What went well?</label>
+                <textarea class="lp-textarea auto-expand list-input" 
+                          placeholder="1. " 
+                          rows="1" 
+                          onfocus="initList(this)" 
+                          onkeydown="handleListInput(event)"></textarea>
+            </div>
+            
+            <div class="form-group full-width">
+                <label>Improvements needed?</label>
+                <textarea class="lp-textarea auto-expand list-input" 
+                          placeholder="1. " 
+                          rows="1" 
+                          onfocus="initList(this)" 
+                          onkeydown="handleListInput(event)"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-bar">
+        <button class="btn-save-plan"><i class="fas fa-save"></i> Save Lesson Plan</button>
+    </div>
+
+</div>
+{% endblock %}

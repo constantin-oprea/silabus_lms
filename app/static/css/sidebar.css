@@ -1,0 +1,404 @@
+/* ===== LEFT SIDEBAR NAVIGATION STYLES ===== */
+
+:root {
+    --primary-green: #356657;
+    --primary-green-light: #3d7565;
+    --primary-green-dark: #2d574a;
+    --sidebar-width: 200px;
+    --sidebar-collapsed-width: 60px;
+}
+
+/* Sidebar Container */
+.left-sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--primary-green);
+    min-height: calc(100vh - 60px);
+    padding: 0;
+    position: sticky;
+    top: 60px;
+    align-self: flex-start;
+    transition: width 0.3s ease, min-width 0.3s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 100; /* Ensure sidebar is above main content for tooltips */
+}
+
+/* Collapsed Sidebar State */
+.left-sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+    min-width: var(--sidebar-collapsed-width);
+    overflow: visible; /* Allow tooltips to show outside sidebar */
+}
+
+.left-sidebar.collapsed .sidebar-text,
+.left-sidebar.collapsed .sidebar-section-title,
+.left-sidebar.collapsed .sidebar-students-section {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+}
+
+.left-sidebar.collapsed .sidebar-link {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.left-sidebar.collapsed .sidebar-link i {
+    margin: 0;
+}
+
+/* Tooltip on hover ONLY when collapsed */
+.left-sidebar.collapsed .sidebar-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #333;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip arrow */
+.left-sidebar.collapsed .sidebar-link::before {
+    content: '';
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: #333;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 9999;
+}
+
+/* Show tooltip on hover when collapsed */
+.left-sidebar.collapsed .sidebar-link:hover::after,
+.left-sidebar.collapsed .sidebar-link:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-nav {
+    height: 100%;
+    padding: 15px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== HEADER LOGO (In Top Navbar) ===== */
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.header-logo-img {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+}
+
+/* ===== HAMBURGER BUTTON ===== */
+
+.hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== NAVIGATION MENU ===== */
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 10px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    white-space: nowrap;
+}
+
+.sidebar-link i {
+    font-size: 18px;
+    width: 22px;
+    min-width: 22px;
+    text-align: center;
+}
+
+.sidebar-text {
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 70%;
+    background: #CCFF00;
+    border-radius: 0 4px 4px 0;
+}
+
+/* ===== SIDEBAR TOP 10 STUDENTS SECTION ===== */
+
+.sidebar-students-section {
+    margin-top: auto;
+    padding: 15px 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-section-title {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+.sidebar-students-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-student-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+.sidebar-student-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-student-avatar:hover {
+    transform: scale(2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    border: 2px solid #fff;
+}
+
+.sidebar-student-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+}
+
+.student-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.student-details {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== RIGHT SIDEBAR PANEL STYLES ===== */
+
+.right-panel {
+    width: 320px;
+    min-width: 320px;
+    background: #f8f9fa;
+    min-height: calc(100vh - 60px);
+    padding: 20px 15px;
+    position: sticky;
+    top: 60px;
+    align-self: flex-start;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+}
+
+/* ===== APP HEADER (Slim Top Bar) ===== */
+
+.app-header {
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.app-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.app-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ===== NAVBAR DATE/TIME ===== */
+
+.nav-date,
+.nav-time {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+}
+
+.nav-date {
+    color: #333;
+}
+
+.nav-time {
+    color: #666;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    background: #f5f5f0;
+    padding: 25px 30px;
+    min-height: calc(100vh - 60px);
+    transition: margin-left 0.3s ease;
+}
+
+/* Main content expands when sidebar collapsed */
+.app-layout.sidebar-collapsed .main-content {
+    margin-left: 0;
+}
+
+/* ===== 3-COLUMN LAYOUT WRAPPER ===== */
+
+.app-layout {
+    display: flex;
+    min-height: calc(100vh - 60px);
+    transition: all 0.3s ease;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+
+@media (max-width: 1200px) {
+    .right-panel {
+        width: 280px;
+        min-width: 280px;
+    }
+}
+
+@media (max-width: 992px) {
+    .left-sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        z-index: 999;
+        transform: translateX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .left-sidebar.collapsed {
+        transform: translateX(-100%);
+    }
+
+    .hamburger-btn {
+        display: flex;
+    }
+
+    .right-panel {
+        display: none;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+}
+
+@media (min-width: 993px) {
+    .hamburger-btn {
+        display: flex;
+    }
+}

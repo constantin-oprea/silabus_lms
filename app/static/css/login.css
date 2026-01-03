@@ -1,0 +1,148 @@
+/* --- FONTS --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Josefin+Sans:wght@300;400;600&family=Playfair+Display:wght@600;700&family=Cinzel:wght@500;700&display=swap');
+
+/* --- RESET & LAYOUT --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- LOGIN CARD --- */
+.login-card {
+    background: white;
+    padding: 50px 60px;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    width: 400px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* --- LOGO SECTION --- */
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.logo-img {
+    width: auto;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 0;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.logo-main {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #1F2937;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.logo-sub {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #20B2AA;
+    /* Teal Accent */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* --- FORM ELEMENTS --- */
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #F8F9FA;
+}
+
+input:focus {
+    border-color: #001F3F;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0, 31, 63, 0.1);
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: #001F3F;
+    color: #CCFF00;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease, transform 0.1s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background: #003366;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* --- NEW LOGO STYLES (Extracted from HTML) --- */
+.logo-scola-wrapper {
+    color: #001F3F;
+    text-align: center;
+}
+
+.logo-scola-text {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #001F3F;
+    letter-spacing: 4px;
+}
+
+.logo-scola-tagline {
+    display: block;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* --- LOGIN LOGO IMAGE --- */
+.login-logo-img {
+    max-width: 280px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}

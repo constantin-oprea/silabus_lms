@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block body_class %}settings-page{% endblock %}
+
+{% block content %}
+<!-- SETTINGS PAGE CONTENT -->
+<div class="settings-wrapper">
+    <!-- LEFT SIDEBAR -->
+    <aside class="settings-sidebar">
+        <!-- Profile Image Section -->
+        <div class="profile-image-section">
+            <div class="profile-image-container">
+                <img src="{% if user.avatar_url %}{{ user.avatar_url }}{% else %}{% static 'images/admin_user.jpg' %}{% endif %}"
+                    alt="Profile" class="settings-profile-img" id="profileImage"
+                    onerror="this.src='https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=2E5D4B&color=fff&size=200'">
+                <div class="profile-image-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <input type="file" id="avatarInput" accept="image/*" hidden>
+            <button class="change-picture-btn" id="changePictureBtn">
+                <i class="fas fa-camera"></i> Change Picture
+            </button>
+        </div>
+
+        <!-- My Courses Section -->
+        <div class="sidebar-info-section">
+            <h4 class="section-label">MY COURSES</h4>
+            <div class="courses-list">
+                {% for course in courses %}
+                <div class="course-item">
+                    <a href="#" class="course-sidebar-link">
+                        <span class="course-name">{{ course.name }}</span>
+                    </a>
+                </div>
+                {% endfor %}
+                {% if not courses %}
+                <p class="empty-state">No courses yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="sidebar-info-section">
+            <h4 class="section-label">MESSAGES</h4>
+            <div class="messages-indicator">
+                <i class="fas fa-envelope"></i>
+                <span>Chat Messages</span>
+                {% if unread_messages > 0 %}
+                <span class="unread-badge">{{ unread_messages }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="settings-main">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <h1 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="profile-position">{{ user.position|default:"Philosophy Teacher" }}</p>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="settings-tabs">
+            <button class="tab-btn active" data-tab="messages">
+                <i class="fas fa-paper-plane"></i> Messages
+            </button>
+            <button class="tab-btn" data-tab="students">
+                <i class="fas fa-users"></i> Students
+            </button>
+            <button class="tab-btn" data-tab="add-student">
+                <i class="fas fa-user-plus"></i> Add Student
+            </button>
+            <button class="tab-btn" data-tab="events">
+                <i class="fas fa-calendar-alt"></i> Events
+            </button>
+            <button class="tab-btn" data-tab="import">
+                <i class="fas fa-file-import"></i> Import
+            </button>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="content-area" id="contentArea">
+
+            <!-- Messages Tab -->
+            <div class="tab-content active" id="messagesTab">
+                <h3>Send Message to Students</h3>
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label for="recipientSelect">Select Recipients</label>
+                        <select id="recipientSelect" class="form-select" multiple>
+                            <option value="all">All Students</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageSubject">Subject</label>
+                        <input type="text" id="messageSubject" class="form-input" placeholder="Enter subject...">
+                    </div>
+                    <div class="form-group">
+                        <label for="messageContent">Message</label>
+                        <textarea id="messageContent" class="form-textarea" rows="6"
+                            placeholder="Write your message..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Students Tab -->
+            <div class="tab-content" id="studentsTab">
+                <div class="students-header">
+                    <h3>My Students</h3>
+                    <div class="filter-group">
+                        <label for="courseFilter">Filter by Course:</label>
+                        <select id="courseFilter" class="form-select">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="students-grid" id="studentsGrid">
+                    {% for student in students %}
+                    <div class="student-card" data-student-id="{{ student.id }}" data-courses="">
+                        <a href="#" class="student-link">
+                            <img src="{{ student.avatar }}" alt="{{ student.name }}" class="student-avatar"
+                                onerror="this.src='https://ui-avatars.com/api/?name={{ student.name|urlencode }}&background=5A9CB5&color=fff'">
+                        </a>
+                        <div class="student-details">
+                            <a href="#" class="student-link">
+                                <h4 class="student-name">{{ student.name }}</h4>
+                            </a>
+                            <p class="student-email">{{ student.email|default:'No email' }}</p>
+                            <p class="student-courses"></p>
+                            {% if student.birthday %}
+                            <p class="student-meta"><i class="fas fa-birthday-cake"></i> {{ student.birthday }}</p>
+                            {% endif %}
+                        </div>
+                        <button class="edit-student-btn" data-student-id="{{ student.id }}" title="Edit Student">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="message-student-btn" data-student-id="{{ student.id }}"
+                            data-student-name="{{ student.name }}">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% if not students %}
+                    <p class="empty-state">No students enrolled in your courses</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Add Student Tab -->
+            <div class="tab-content" id="add-studentTab">
+                <h3>Add New Student</h3>
+                <form id="addStudentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentFirstName">First Name *</label>
+                            <input type="text" id="studentFirstName" class="form-input"
+                                placeholder="Enter first name..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentLastName">Last Name *</label>
+                            <input type="text" id="studentLastName" class="form-input" placeholder="Enter last name..."
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentEmail">Email</label>
+                            <input type="email" id="studentEmail" class="form-input" placeholder="student@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentBirthday">Birthday</label>
+                            <input type="date" id="studentBirthday" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentCourse">Assign to Course *</label>
+                        <select id="studentCourse" class="form-select" required>
+                            <option value="">Select a course...</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentHobbies">Hobbies</label>
+                        <input type="text" id="studentHobbies" class="form-input"
+                            placeholder="e.g., Reading, Music, Sports">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentSocialCircle">Social Circle</label>
+                        <select id="studentSocialCircle" class="form-select" multiple disabled>
+                            <option value="" disabled>Select a course first to see available students</option>
+                        </select>
+                        <small class="form-hint">Select students from the same course who are friends</small>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i> Add Student
+                    </button>
+                </form>
+            </div>
+
+            <!-- Events Tab -->
+            <div class="tab-content" id="eventsTab">
+                <div class="events-header">
+                    <h3>Manage Events</h3>
+                    <span class="events-count" id="eventsCount">{{ events|length }} events</span>
+                </div>
+                <div class="events-list" id="eventsList">
+                    {% for event in events %}
+                    <div class="event-item" data-event-id="{{ event.id }}">
+                        <div class="event-date-badge">
+                            <span class="event-day">{{ event.date }}</span>
+                            <span class="event-month">{{ event.month }}</span>
+                        </div>
+                        <div class="event-details">
+                            <h4 class="event-title">{{ event.title }}</h4>
+                            <p class="event-meta">
+                                <span class="event-type-badge {{ event.type }}">{{ event.event_type|title }}</span>
+                                {% if event.start_time %}
+                                <span class="event-time"><i class="fas fa-clock"></i> {{ event.start_time }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <button class="delete-event-btn" data-event-id="{{ event.id }}" title="Delete Event">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% if not events %}
+                    <p class="empty-state">No events yet. Create events from the calendar on the Dashboard.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Import Tab -->
+            <div class="tab-content" id="importTab">
+                <h3>Import Students from File</h3>
+                <div class="import-instructions">
+                    <p>Upload a CSV or Excel file with student information. The file should have the following columns:
+                    </p>
+                    <ol>
+                        <li><strong>First Name</strong> (required)</li>
+                        <li><strong>Last Name</strong> (required)</li>
+                        <li><strong>Date of Birth</strong> (optional, format: YYYY-MM-DD)</li>
+                        <li><strong>Hobbies</strong> (optional)</li>
+                    </ol>
+                    <p class="import-note">
+                        <i class="fas fa-info-circle"></i>
+                        Missing columns will be imported with empty values. You can edit details after import.
+                    </p>
+                </div>
+
+                <div class="import-actions">
+                    <a href="/api/settings/students/template" class="action-btn secondary" download>
+                        <i class="fas fa-download"></i> Download Template
+                    </a>
+                </div>
+
+                <form id="importForm" class="import-form">
+                    <div class="form-group">
+                        <label for="importCourse">Assign Students to Course *</label>
+                        <select id="importCourse" class="form-select" required>
+                            <option value="">Select a course...</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="file-upload-zone" id="fileUploadZone">
+                        <input type="file" id="importFile" accept=".csv,.xlsx,.xls" hidden>
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop your file here, or <span class="upload-link">click to browse</span></p>
+                            <small>Supports CSV, XLS, XLSX files</small>
+                        </div>
+                        <div class="file-selected hidden" id="fileSelected">
+                            <i class="fas fa-file-excel"></i>
+                            <span class="file-name" id="fileName"></span>
+                            <button type="button" class="remove-file-btn" id="removeFileBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="importSubmitBtn" disabled>
+                        <i class="fas fa-upload"></i> Import Students
+                    </button>
+                </form>
+
+                <div class="import-results hidden" id="importResults">
+                    <h4>Import Results</h4>
+                    <div id="importResultsContent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- CROP MODAL -->
+<div id="cropModal" class="crop-modal">
+    <div class="crop-modal-content">
+        <div class="crop-modal-header">
+            <h3>Crop Profile Picture</h3>
+            <button class="close-crop-btn" id="closeCropBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="crop-container">
+            <img id="cropImage" src="" alt="Image to crop">
+        </div>
+        <div class="crop-modal-footer">
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoomInBtn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                <button class="zoom-btn" id="zoomOutBtn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                <button class="zoom-btn" id="resetCropBtn" title="Reset"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <div class="footer-actions">
+                <button class="action-btn secondary" id="cancelCropBtn">Cancel</button>
+                <button class="action-btn primary" id="saveCropBtn">Save & Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT STUDENT MODAL -->
+<div id="editStudentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Student</h3>
+            <button class="close-modal-btn" id="closeEditStudentModal"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="editStudentForm">
+            <input type="hidden" id="editStudentId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editFirstName">First Name *</label>
+                    <input type="text" id="editFirstName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLastName">Last Name *</label>
+                    <input type="text" id="editLastName" class="form-input" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="editBirthday">Birthday</label>
+                    <input type="date" id="editBirthday" class="form-input">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="editHobbies">Hobbies</label>
+                <input type="text" id="editHobbies" class="form-input">
+            </div>
+            <div class="form-group">
+                <label for="editSocialCircle">Social Circle</label>
+                <select id="editSocialCircle" class="form-select" multiple>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="action-btn secondary" id="cancelEditStudent">Cancel</button>
+                <button type="submit" class="action-btn primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3>Confirm Delete</h3>
+            <button class="close-modal-btn" id="closeDeleteModal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p id="deleteConfirmMessage">Are you sure you want to delete this item?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="action-btn secondary" id="cancelDelete">Cancel</button>
+            <button type="button" class="action-btn danger" id="confirmDelete">Delete</button>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="{% static 'js/settings.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,74 @@
+<!-- RIGHT SIDEBAR PANEL - Calendar and Upcoming Events ONLY -->
+{% load static %}
+
+<div class="right-panel-content">
+    <!-- CALENDAR WIDGET -->
+    <div class="panel-section calendar-section">
+        <div class="panel-section-header">
+            <h3 id="calendarMonthTitle">January 2026</h3>
+            <div class="calendar-nav">
+                <button type="button" id="calPrev" aria-label="Previous month">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" id="calNext" aria-label="Next month">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="month-calendar">
+            <div class="calendar-weekdays">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+                <!-- Rendered by JS with rounded tile design -->
+            </div>
+        </div>
+    </div>
+
+    <!-- UPCOMING EVENTS -->
+    <div class="panel-section events-section">
+        <div class="panel-section-header">
+            <h3>Upcoming Events</h3>
+            <button type="button" class="add-event-btn-small" id="addEventBtnSidebar" title="Add Event"
+                aria-label="Add Event">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <div class="upcoming-events-list" id="sidebarEventsList">
+            <!-- Demo Events -->
+            <div class="event-item-small">
+                <div class="event-date-badge">
+                    <span class="day">12</span>
+                    <span class="month">JAN</span>
+                </div>
+                <div class="event-info-small">
+                    <h4>Faculty Meeting</h4>
+                    <span class="time">09:00 AM • Meeting Room 1</span>
+                </div>
+            </div>
+            <div class="event-item-small">
+                <div class="event-date-badge">
+                    <span class="day">15</span>
+                    <span class="month">JAN</span>
+                </div>
+                <div class="event-info-small">
+                    <h4>Science Fair Prep</h4>
+                    <span class="time">02:00 PM • Lab 3</span>
+                </div>
+            </div>
+            <div class="event-item-small">
+                <div class="event-date-badge">
+                    <span class="day">20</span>
+                    <span class="month">JAN</span>
+                </div>
+                <div class="event-info-small">
+                    <h4>Parent Teacher Conf.</h4>
+                    <span class="time">10:00 AM • Main Hall</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Global Calendar Data -->
+<script id="globalCalendarData" type="application/json">{{ global_events_json|safe }}</script>

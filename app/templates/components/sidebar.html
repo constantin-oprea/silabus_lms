@@ -1,0 +1,39 @@
+<aside class="sidebar">
+    <div class="sidebar-content-wrapper">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo_1.png') }}" alt="Logo" class="logo-img" width="50">
+            <div class="logo-text">
+                <span class="logo-main">SAPEREAude</span>
+                <span class="logo-sub">ACADEMY</span>
+            </div>
+        </div>
+        
+        <nav class="menu">
+            <a href="{{ url_for('dashboard.dashboard_view') }}" class="{{ 'active' if page == 'dashboard' else '' }}">
+                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+            </a>
+            
+            <a href="{{ url_for('dashboard.schedule_view') }}" class="{{ 'active' if page == 'schedule' else '' }}">
+                <i class="fas fa-calendar-alt"></i> <span>Schedule</span>
+            </a>
+            
+            <a href="{{ url_for('lesson_plans.lesson_plans_view') }}" class="{{ 'active' if page == 'lesson_plans' else '' }}">
+                <i class="fas fa-book-open"></i> <span>Lesson Plans</span>
+            </a>
+            
+            <a href="{{ url_for('students.students_view') }}" class="{{ 'active' if page == 'students' else '' }}">
+                <i class="fas fa-users"></i> <span>Students</span>
+            </a>
+
+            <a href="#"><i class="fas fa-comments"></i> <span>Forum</span></a>
+            <a href="#"><i class="fas fa-clipboard-check"></i> <span>Rubrics</span></a>
+            <a href="#"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+        </nav>
+
+        <div class="cta-panel sidebar-panel">
+            <button class="btn-create-course">
+                <i class="fas fa-plus"></i> <span>Create New Course</span>
+            </button>
+        </div>
+    </div>
+</aside>
