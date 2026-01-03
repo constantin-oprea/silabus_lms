@@ -131,6 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
             closeEventModal();
         });
     }
+
+    // Initialize event details popup
+    initEventDetailsPopup();
 });
 
 
@@ -986,6 +989,42 @@ function getEventTypeLabel(type) {
 
 
 
+
+// ===== EVENT DETAILS POPUP (Sidebar) =====
+function initEventDetailsPopup() {
+    const overlay = document.getElementById('eventPopupOverlay');
+    const closeBtn = document.getElementById('eventPopupClose');
+    if (!overlay) return;
+    if (closeBtn) closeBtn.addEventListener('click', closeEventDetailsPopup);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeEventDetailsPopup(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeEventDetailsPopup(); });
+    document.querySelectorAll('.event-item-small').forEach(item => {
+        item.addEventListener('click', () => showEventDetailsFromElement(item));
+    });
+}
+
+function showEventDetailsFromElement(element) {
+    const overlay = document.getElementById('eventPopupOverlay');
+    if (!overlay) return;
+    const titleEl = element.querySelector('h4');
+    const timeEl = element.querySelector('.time');
+    const dayEl = element.querySelector('.day');
+    const monthEl = element.querySelector('.month');
+    document.getElementById('eventPopupTitle').textContent = titleEl ? titleEl.textContent : 'Event';
+    document.getElementById('eventPopupDate').textContent = (monthEl ? monthEl.textContent : '') + ' ' + (dayEl ? dayEl.textContent : '') + ', ' + new Date().getFullYear();
+    document.getElementById('eventPopupTime').textContent = timeEl ? timeEl.textContent : 'Time not specified';
+    document.getElementById('eventPopupType').textContent = 'Meeting';
+    const participantsRow = document.getElementById('eventPopupParticipantsRow');
+    const notesSection = document.getElementById('eventPopupNotesSection');
+    if (participantsRow) participantsRow.style.display = 'none';
+    if (notesSection) notesSection.style.display = 'none';
+    overlay.classList.add('active');
+}
+
+function closeEventDetailsPopup() {
+    const overlay = document.getElementById('eventPopupOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
 // ===== UPCOMING EVENTS =====
 function renderUpcomingEvents() {
     const container = document.getElementById('upcomingEventsList');
@@ -1857,3 +1896,4 @@ if (scheduleAddBtn) {
         });
     });
 })();
+
