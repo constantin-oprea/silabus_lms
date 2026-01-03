@@ -22,6 +22,13 @@
     overflow-x: hidden;
     overflow-y: auto;
     z-index: 100; /* Ensure sidebar is above main content for tooltips */
+    /* Hide scrollbars */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.left-sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 /* Collapsed Sidebar State */
@@ -288,6 +295,15 @@
     align-self: flex-start;
     overflow-y: auto;
     max-height: calc(100vh - 60px);
+    scroll-behavior: smooth;
+    /* Hide scrollbars while keeping scroll functionality */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.right-panel::-webkit-scrollbar {
+    display: none;
 }
 
 /* ===== APP HEADER (Slim Top Bar) ===== */
@@ -344,7 +360,16 @@
     background: #f5f5f0;
     padding: 25px 30px;
     min-height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
     transition: margin-left 0.3s ease;
+    /* Hide scrollbars */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar {
+    display: none;
 }
 
 /* Main content expands when sidebar collapsed */
