@@ -83,9 +83,9 @@ if ON_PYTHONANYWHERE:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("MYSQL_DATABASE", "constantinoprea$silabus"),
-            "USER": os.environ.get("MYSQL_USER", "constantinoprea"),
-            "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
+            "NAME": "ConstantinOprea$silabus",
+            "USER": "ConstantinOprea",
+            "PASSWORD": "SapereAude2025"
             "HOST": "ConstantinOprea.mysql.pythonanywhere-services.com",
             "PORT": "3306",
             "OPTIONS": {
