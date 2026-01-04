@@ -85,7 +85,7 @@ if ON_PYTHONANYWHERE:
             "ENGINE": "django.db.backends.mysql",
             "NAME": "ConstantinOprea$silabus",
             "USER": "ConstantinOprea",
-            "PASSWORD": "SapereAude2025"
+            "PASSWORD": "SapereAude2025",
             "HOST": "ConstantinOprea.mysql.pythonanywhere-services.com",
             "PORT": "3306",
             "OPTIONS": {
