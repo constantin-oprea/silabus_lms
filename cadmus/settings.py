@@ -13,7 +13,7 @@ ON_PYTHONANYWHERE = "PYTHONANYWHERE_DOMAIN" in os.environ
 SECRET_KEY = "django-insecure-7j%ml@4y8v#p27$^k(m@3z=w5hs-rb!r3$u5gj@qe8*xf^n9zk"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not ON_PYTHONANYWHERE
 
 ALLOWED_HOSTS = [
     "www.silabuslms.com",
@@ -51,8 +51,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "cadmus.middleware.AutoLoginMiddleware",
 ]
+
+if not ON_PYTHONANYWHERE:
+    MIDDLEWARE.append("cadmus.middleware.AutoLoginMiddleware")
 
 ROOT_URLCONF = "cadmus.urls"
 
@@ -85,7 +87,7 @@ if ON_PYTHONANYWHERE:
             "ENGINE": "django.db.backends.mysql",
             "NAME": "ConstantinOprea$silabus",
             "USER": "ConstantinOprea",
-            "PASSWORD": "SapereAude2025",
+            "PASSWORD": "g#vP@DhcSZr6@_K",
             "HOST": "ConstantinOprea.mysql.pythonanywhere-services.com",
             "PORT": "3306",
             "OPTIONS": {
