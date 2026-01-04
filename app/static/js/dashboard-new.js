@@ -16,12 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
         try {
             console.log("Attempting to render Top 10 students...");
-            renderSidebarStudents(); 
+            // renderLeaderboardWidget(); // Removed - replaced by static At Risk list 
         } catch (e) {
             console.error("Error rendering top students:", e);
         }
     }, 500);
     updateNavDateTime();
+    initStudentsToggle(); // Students panel toggle with auto-rotation
 
     // Update time every second
     setInterval(updateNavDateTime, 1000);
@@ -225,43 +226,7 @@ function clearSearchHighlights() {
 
 // ===== COURSES CAROUSEL =====
 let coursesCarouselIndex = 0;
-function initCoursesCarousel() {
-    const prevBtn = document.getElementById('coursesPrev');
-    const nextBtn = document.getElementById('coursesNext');
-    const grid = document.getElementById('coursesGrid');
-
-    if (!prevBtn || !nextBtn || !grid) return;
-
-    function updateCarousel() {
-        const cards = grid.querySelectorAll('.course-card-new');
-        const visibleCount = 3;
-        const maxIndex = Math.max(0, cards.length - visibleCount);
-
-        coursesCarouselIndex = Math.min(Math.max(0, coursesCarouselIndex), maxIndex);
-
-        const cardWidth = cards[0]?.offsetWidth || 200;
-        const gap = 15;
-        const translateX = coursesCarouselIndex * (cardWidth + gap);
-
-        grid.style.transform = `translateX(-${translateX}px)`;
-
-        prevBtn.disabled = coursesCarouselIndex === 0;
-        nextBtn.disabled = coursesCarouselIndex >= maxIndex;
-    }
-
-    prevBtn.addEventListener('click', () => {
-        coursesCarouselIndex--;
-        updateCarousel();
-    });
-
-    nextBtn.addEventListener('click', () => {
-        coursesCarouselIndex++;
-        updateCarousel();
-    });
-
-    // Initial state
-    setTimeout(updateCarousel, 100);
-}
+    // initCoursesCarousel(); // Disabled for new horizontal flex layout
 
 // ===== ADD COURSE MODAL =====
 function initAddCourseModal() {
@@ -1063,69 +1028,159 @@ function renderUpcomingEvents() {
     container.innerHTML = html;
 }
 
-// ===== COURSES =====
+// ===== COURSES WITH DOT PAGINATION =====
+let currentCoursePage = 0;
+const coursesPerPage = 3;
+
+function createCourseCard(course) {
+    const displayName = `${course.name} ${course.grade || ''}`;
+    const card = document.createElement('div');
+    card.className = 'course-card-new';
+    card.innerHTML = `
+        <div class="course-card-header">
+            <img src="${course.icon}" class="course-thumb" alt="${course.name}" onerror="this.src='/static/images/course_illustration_1.png'">
+            <div class="course-card-info">
+                <h4>${displayName}</h4>
+                <div class="course-status"><i class="fas fa-check-circle"></i> 23/23 Present Today</div>
+            </div>
+        </div>
+        <div class="course-stats-row">
+            <div class="stat-item">
+                <strong>${course.students}</strong>
+                <span>STUDENTS</span>
+            </div>
+            <div class="stat-item">
+                <strong>${course.room || course.grade}</strong>
+                <span>ROOM</span>
+            </div>
+            <div class="stat-item">
+                <strong>${course.days}</strong>
+                <span>SCHEDULE</span>
+            </div>
+        </div>
+        <div class="course-actions">
+            <span class="badge-pill badge-red">3 Pending Essays</span>
+            <span class="badge-pill badge-orange">2 Missing Submissions</span>
+        </div>
+    `;
+    return card;
+}
+
+function initDotNavigation(totalCourses) {
+    const dotsContainer = document.getElementById('carouselDots');
+    if (!dotsContainer) return;
+
+    dotsContainer.innerHTML = ''; // Clear existing dots
+    const totalPages = Math.ceil(totalCourses / coursesPerPage);
+
+    for (let i = 0; i < totalPages; i++) {
+        const dot = document.createElement('span');
+        dot.className = `dot ${i === currentCoursePage ? 'active' : ''}`;
+        dot.dataset.index = i;
+        dot.addEventListener('click', () => {
+            currentCoursePage = i;
+            renderCourses(); // Re-render courses for the new page
+        });
+        dotsContainer.appendChild(dot);
+    }
+}
+
 function renderCourses() {
     const container = document.getElementById('coursesGrid');
-    if (!container) return;
+    if (!container) {
+        console.warn("Courses container #coursesGrid not found");
+        return;
+    }
 
-    // Use server data if available
-    let courses = [];
+    let allCourses = [];
 
     if (typeof serverCoursesData !== 'undefined' && serverCoursesData.length > 0) {
-        courses = serverCoursesData.map(c => ({
+        allCourses = serverCoursesData.map(c => ({
             name: c.name,
-            subtitle: `${c.room}, High School`,
+            grade: c.grade || "", // e.g. "III A"
             icon: c.icon_url || '/static/images/course_illustration_1.png',
             students: c.student_count || 0,
             room: c.room || 'TBD',
-            days: c.days || 'TBD'
+            days: c.days || 'Mon, Wed, Fri' // Mock schedule if missing
         }));
     } else {
-        // Fallback data
-        courses = [
-            { name: "Philosophy", subtitle: "III A, High School", icon: "/static/images/icon_Philosophy.png", students: 28, room: "III A", days: "Mon, Wed, Fri" },
-            { name: "Social Studies", subtitle: "IV B, High School", icon: "/static/images/icon_social_studies.jpg", students: 32, room: "IV B", days: "Tue, Thu" },
-            { name: "Projects", subtitle: "V, High School", icon: "/static/images/icon_projects.jpeg", students: 24, room: "V", days: "Mon, Wed" }
+        // Fallback data matching the mock
+        allCourses = [
+            { name: "Philosophy", grade: "IIIA", icon: "/static/images/course_illustration_1.png", students: 28, room: "III A", days: "Mon, Wed, Fri" },
+            { name: "Philosophy", grade: "IIIB", icon: "/static/images/course_illustration_2.png", students: 28, room: "III A", days: "Mon, Wed, Fri" },
+            { name: "Philosophy", grade: "IVC", icon: "/static/images/course_illustration_3.png", students: 28, room: "III A", days: "Mon, Wed, Fri" },
+            { name: "Philosophy", grade: "IVA", icon: "/static/images/course_illustration_4.png", students: 28, room: "III A", days: "Mon, Wed, Fri" },
+            { name: "Philosophy", grade: "VA", icon: "/static/images/course_illustration_5.png", students: 28, room: "III A", days: "Mon, Wed, Fri" }
         ];
     }
 
-    let html = '';
-    courses.forEach(course => {
-        const courseSlug = course.name.toLowerCase().replace(/ /g, '-');
-        const courseLink = `/course/${courseSlug}`;
+    // Calculate which courses to show
+    const startIndex = currentCoursePage * coursesPerPage;
+    const endIndex = startIndex + coursesPerPage;
+    const coursesToShow = allCourses.slice(startIndex, endIndex);
 
-        html += `
-            <div class="course-card-new">
-                <div class="course-icon-wrapper">
-                    <a href="${courseLink}">
-                        <img src="${course.icon}" alt="${course.name}" class="course-icon-img"
-                             onerror="this.style.display='none'">
-                    </a>
-                </div>
-                <div class="course-info-new">
-                    <a href="${courseLink}" class="course-name-link">
-                        <h4>${course.name}</h4>
-                    </a>
-                    <p class="course-subtitle">${course.subtitle}</p>
-                    <div class="course-stats">
-                        <div class="course-stat">
-                            <span class="stat-value">${course.students}</span>
-                            <span class="stat-label">Students</span>
-                        </div>
-                        <div class="course-stat">
-                            <span class="stat-value">${course.room}</span>
-                            <span class="stat-label">Room</span>
-                        </div>
-                        <div class="course-stat">
-                            <span class="stat-value">${course.days}</span>
-                            <span class="stat-label">Schedule</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+    // Clear container
+    container.innerHTML = '';
+
+    // Render visible courses
+    coursesToShow.forEach(course => {
+        const card = createCourseCard(course);
+        container.appendChild(card);
     });
-    container.innerHTML = html;
+
+    // Initialize/update dot navigation
+    updateDotNavigation(allCourses.length);
+}
+
+function updateDotNavigation(totalCourses) {
+    const dotsContainer = document.getElementById('coursesDotNav');
+    if (!dotsContainer) return;
+
+    const totalPages = Math.ceil(totalCourses / coursesPerPage);
+    const dots = dotsContainer.querySelectorAll('.course-dot');
+
+    // Update existing dots
+    dots.forEach((dot, i) => {
+        if (i === currentCoursePage) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+
+    // Add click handlers if not already added
+    if (!dotsContainer.dataset.initialized) {
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                currentCoursePage = i;
+                renderCourses();
+            });
+        });
+        dotsContainer.dataset.initialized = 'true';
+    }
+}
+
+function initCourseCarouselDots() {
+    const dots = document.querySelectorAll('#carouselDots .dot');
+    const cards = document.querySelectorAll('#coursesList .course-card-new');
+    
+    if (!dots.length || !cards.length) return;
+    
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const targetPage = parseInt(dot.dataset.index);
+            
+            // Update active dot
+            dots.forEach(d => d.classList.remove('active'));
+            dot.classList.add('active');
+            
+            // Show/hide cards based on page
+            cards.forEach(card => {
+                const cardPage = parseInt(card.dataset.page);
+                card.style.display = cardPage === targetPage ? '' : 'none';
+            });
+        });
+    });
 }
 
 // ===== MONTHLY PROGRESS CHART (CINEMATIC) =====
@@ -1584,31 +1639,48 @@ function formatTimeRemaining(date) {
 }
 
 // ===== TOP 10 STUDENTS (STATIC) =====
-// ===== TOP 10 STUDENTS (STATIC) =====
-function renderSidebarStudents() {
-    const container = document.getElementById('sidebarTopStudentsList');
-    console.log("renderSidebarStudents called. Container found:", !!container);
+// ===== LEADERBOARD WIDGET =====
+function renderLeaderboardWidget() {
+    const container = document.getElementById('leaderboardList');
+    console.log("renderLeaderboardWidget called. Container found:", !!container);
     if (!container) return;
 
-    const students = [
-        { name: "Martinez Espinoza", details: "IVC, Philosophy", img: "face_1.jpg" },
-        { name: "Roman Belarus", details: "IIA, Social Studies, English", img: "face_2.jpg" },
-        { name: "Liam Carter", details: "VA, Math, Physics", img: "face_3.jpg" },
-        { name: "Sophia Turner", details: "IIIB, History", img: "face_4.jpg" },
-        { name: "Noah Parker", details: "IVB, Chemistry", img: "face_5.jpg" },
-        { name: "Olivia Green", details: "IIA, Biology", img: "face_6.jpg" },
-        { name: "Ethan White", details: "VC, Geography", img: "face_7.jpg" },
-        { name: "Ava King", details: "IIIC, Literature", img: "face_8.jpg" },
-        { name: "Mason Scott", details: "IVA, PE, Art", img: "face_9.jpg" },
-        { name: "Isabella Hill", details: "VB, Music", img: "face_10.jpg" }
-    ];
+    // Use server data if available, else fallback
+    let students = [];
+    try {
+        const serverDataEl = document.getElementById('topStudentsData');
+        if (serverDataEl) {
+            students = JSON.parse(serverDataEl.textContent);
+        }
+    } catch (e) {
+        console.error("Error parsing top students data:", e);
+    }
 
-    container.innerHTML = students.map(s => `
-        <div class="sidebar-student-item">
-            <img src="/static/images/${s.img}" class="sidebar-student-avatar" alt="${s.name}">
-            <div class="sidebar-student-info">
+    if (!students || students.length === 0) {
+        students = [
+            { name: "Martinez Espinoza", details: "IVC, Philosophy", img: "face_1.jpg", gpa: "9.8" },
+            { name: "Roman Belarus", details: "IIA, Social Studies", img: "face_2.jpg", gpa: "9.7" },
+            { name: "Liam Carter", details: "VA, Math", img: "face_3.jpg", gpa: "9.6" },
+            { name: "Sophia Turner", details: "IIIB, History", img: "face_4.jpg", gpa: "9.5" },
+            { name: "Noah Parker", details: "IVB, Chemistry", img: "face_5.jpg", gpa: "9.4" },
+            { name: "Olivia Green", details: "IIA, Biology", img: "face_6.jpg", gpa: "9.3" },
+            { name: "Ethan White", details: "VC, Geography", img: "face_7.jpg", gpa: "9.2" },
+            { name: "Ava King", details: "IIIC, Literature", img: "face_8.jpg", gpa: "9.1" },
+            { name: "Mason Scott", details: "IVA, PE", img: "face_9.jpg", gpa: "9.0" },
+            { name: "Isabella Hill", details: "VB, Music", img: "face_10.jpg", gpa: "8.9" }
+        ];
+    }
+
+    container.innerHTML = students.map((s, index) => `
+        <div class="leaderboard-item">
+            <div class="leaderboard-rank">${index + 1}</div>
+            <img src="/static/images/${s.img || 'default_avatar.jpg'}" class="leaderboard-avatar" alt="${s.name}">
+            <div class="leaderboard-info">
                 <div class="student-name">${s.name}</div>
-                <div class="student-details">${s.details}</div>
+                <div class="student-details">${s.details || ''}</div>
+            </div>
+            <div class="leaderboard-score">
+                <span class="score-badge">${s.gpa || s.grade || '-'}</span>
             </div>
         </div>
     `).join('');
@@ -1899,3 +1971,128 @@ if (scheduleAddBtn) {
     });
 })();
 
+// ===== STUDENTS TOGGLE PANEL WITH AUTO-ROTATION =====
+function initStudentsToggle() {
+    const riskBtn = document.getElementById('toggleRiskBtn');
+    const top10Btn = document.getElementById('toggleTop10Btn');
+    const riskPanel = document.getElementById('riskPanel');
+    const top10Panel = document.getElementById('top10Panel');
+    
+    if (!riskBtn || !top10Btn || !riskPanel || !top10Panel) {
+        console.log("Students toggle elements not found");
+        return;
+    }
+    
+    let currentPanel = 'risk';
+    let autoRotateInterval = null;
+    
+    function showPanel(panelName) {
+        if (panelName === 'risk') {
+            riskPanel.style.display = 'block';
+            top10Panel.style.display = 'none';
+            riskBtn.classList.add('active');
+            top10Btn.classList.remove('active');
+            currentPanel = 'risk';
+        } else {
+            riskPanel.style.display = 'none';
+            top10Panel.style.display = 'block';
+            riskBtn.classList.remove('active');
+            top10Btn.classList.add('active');
+            currentPanel = 'top10';
+        }
+    }
+    
+    function togglePanel() {
+        showPanel(currentPanel === 'risk' ? 'top10' : 'risk');
+    }
+    
+    // Click handlers
+    riskBtn.addEventListener('click', () => {
+        showPanel('risk');
+        resetAutoRotate();
+    });
+    
+    top10Btn.addEventListener('click', () => {
+        showPanel('top10');
+        resetAutoRotate();
+    });
+    
+    // Auto-rotate every 5 seconds
+    function startAutoRotate() {
+        autoRotateInterval = setInterval(togglePanel, 5000);
+    }
+    
+    function resetAutoRotate() {
+        clearInterval(autoRotateInterval);
+        startAutoRotate();
+    }
+    
+    // Start auto-rotation
+    startAutoRotate();
+    
+    console.log("Students toggle initialized with 5s auto-rotation");
+}
+
+// ===== ACTION CENTER SLOT MACHINE LOGIC =====
+function initActionCenter() {
+    // 1. Mock Data
+    const acData = {
+        messages: [
+            { name: "Frank", room: "IIIC", course: "Philosophy", date: "02/Jan/2026", time: "14:15", text: "Teacher, I need help with the homework because the reading on Plato is a bit confusing." },
+            { name: "Sofia", room: "IIIA", course: "Philosophy", date: "03/Jan/2026", time: "09:30", text: "Can I submit my reflection via a video link instead of a document?" },
+            { name: "Mateo", room: "VC", course: "Projects", date: "03/Jan/2026", time: "16:45", text: "I found a great source for our science fair project, can I show you tomorrow?" }
+        ],
+        topics: [
+            { name: "Leo", title: "The Allegory of the Cave", text: "I consider the idea of getting to the truth as a painful but necessary journey..." },
+            { name: "Lucia", title: "Modern Ethics", text: "If we apply Utilitarianism to our current climate crisis, the results are..." },
+            { name: "Juan", title: "Social Structure", text: "The way we organize cities today actually reflects ancient social hierarchies..." }
+        ],
+        deadlines: [
+            { name: "Rodrigo", room: "IVC", course: "Social Studies", task: "Not handed the Essay", duration: "2 days missed" },
+            { name: "Elena", room: "IIB", course: "Philosophy", task: "Plato Reflection Paper", duration: "1 day missed" },
+            { name: "Diego", room: "VA", course: "Projects", task: "Final Lab Report", duration: "3 days missed" }
+        ]
+    };
+
+    // 2. Render Action Center Banner
+    function renderActionCenter() {
+        // Messages
+        const msgCount = document.getElementById('acCountMessages');
+        const msgSummary = document.getElementById('acSummaryMessages');
+        if (msgCount && msgSummary) {
+            msgCount.innerText = "4";
+            msgSummary.innerText = "From Frank, Sofia, Mateo...";
+        }
+
+        // Topics
+        const topicCount = document.getElementById('acCountTopics');
+        const topicSummary = document.getElementById('acSummaryTopics');
+        if (topicCount && topicSummary) {
+            topicCount.innerText = "8";
+            topicSummary.innerText = "Philosophy, Ethics, Projects...";
+        }
+
+        // Deadlines
+        const deadCount = document.getElementById('acCountDeadlines');
+        const deadSummary = document.getElementById('acSummaryDeadlines');
+        if (deadCount && deadSummary) {
+            deadCount.innerText = "5";
+            deadSummary.innerText = "Essays, Lab Reports, Reflections...";
+        }
+    }
+
+    renderActionCenter();
+}
+
+// Sparkline removed as it's no longer used in the new design
+
+// Initialize everything when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initActionCenter();
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initActionCenter);
+} else {
+    initActionCenter();
+}

@@ -5,188 +5,151 @@
 {% block body_class %}students-page{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{% static 'css/students-new.css' %}">
+<link rel="stylesheet" href="{% static 'css/students-new.css' %}?v=3">
+<!-- Chart.js for charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<!-- STUDENTS PAGE CONTENT - Uses global 3-column layout from base.html -->
-<div class="students-content-wrapper">
-    <!-- LEFT: Student Directory List -->
-    <div class="students-directory-panel">
-        <div class="course-filter-section">
-            <label class="course-filter-label">Course Filter</label>
-            <select class="course-filter-dropdown" id="courseFilterDropdown">
-                <option value="all">All Courses</option>
-                <option value="Philosophy">Philosophy</option>
-                <option value="Social Studies">Social Studies</option>
-                <option value="Psychology">Psychology</option>
-            </select>
+<!-- STUDENTS PAGE - COMPACT SPLIT VIEW -->
+<div class="students-layout-wrapper">
+    
+    <!-- LEFT PANEL: Student Directory -->
+    <div class="directory-panel">
+        <div class="directory-header">
+            <h2>Student List</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label>Course:</label>
+                    <select id="courseFilter">
+                        <option value="all">All Courses</option>
+                        {% for group in groups %}
+                            <option value="{{ group.name }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Sort is visual only for now or client-side -->
+                <div class="filter-group">
+                    <label>Sort By:</label>
+                    <select id="sortFilter">
+                        <option value="name_asc">Name A-Z</option>
+                        <option value="name_desc">Name Z-A</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div class="students-list-container" id="studentsListContainer">
-            <!-- Student cards rendered by JS -->
+
+        <div class="student-list-virtual-container" id="virtualScrollContainer">
+            <div class="virtual-scroll-spacer" id="virtualSpacer"></div>
+            <div class="student-list-content" id="studentListContent">
+                <!-- Javascript will inject items here -->
+            </div>
         </div>
     </div>
 
-    <!-- CENTER: Student Report Card -->
-    <div class="student-report-main">
-        <div class="report-card-container">
-            <h1 class="report-card-title">Student Report Card</h1>
-
-            <!-- Student Header Card (Gold) -->
-            <div class="student-header-card" id="studentHeaderCard">
-                <img src="" alt="" class="student-header-avatar" id="headerAvatar">
-                <div class="student-header-info">
-                    <div class="header-main-row">
-                        <h2 id="headerName">Select a Student</h2>
-                        <div class="header-profile-info">
-                            <div class="header-profile-item">
-                                <span class="hp-label">Birthday:</span>
-                                <span class="hp-value" id="profileBirthday">--</span>
-                            </div>
-                            <div class="header-profile-item">
-                                <span class="hp-label">Hobbies:</span>
-                                <span class="hp-value" id="profileHobbies">--</span>
-                            </div>
-                        </div>
+    <!-- RIGHT PANEL: Student Profile Details -->
+    <div class="profile-panel" id="profilePanel">
+        <!-- HEADER CARD -->
+        <div class="profile-header-card">
+            <div class="header-content">
+                <div class="header-avatar-section">
+                    <img src="" id="pAvatar" alt="Student" class="profile-avatar-lg">
+                </div>
+                <div class="header-info-section">
+                    <div class="header-top-row">
+                        <h1 id="pName">Student Name</h1>
+                        <button class="btn-edit-profile"><i class="fas fa-pencil-alt"></i> Edit Profile</button>
                     </div>
-                    <div class="student-header-tags" id="headerTags">
-                        <span class="header-tag course-tag" id="headerCourseTag">--</span>
-                        <span class="header-tag special-tag">IB Candidate</span>
+                    <div class="header-sub-row">
+                        <span class="header-course" id="pCourse">Course: --</span>
                     </div>
-                </div>
-            </div>
-
-            <!-- Performance Metrics -->
-            <div class="rc-metrics-row">
-                <div class="rc-metric-card avg-card" id="avgCard">
-                    <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="metric-value" id="avgGrade">--</div>
-                    <div class="metric-label">Average Grade</div>
-                </div>
-                <div class="rc-metric-card attendance-card" id="attendanceCard">
-                    <div class="metric-icon"><i class="fas fa-calendar-check"></i></div>
-                    <div class="metric-value" id="attendancePct">--</div>
-                    <div class="metric-label">Attendance</div>
-                </div>
-                <div class="rc-metric-card behavior-card" id="behaviorCard">
-                    <div class="metric-icon"><i class="fas fa-star"></i></div>
-                    <div class="metric-value" id="behaviorScore">--</div>
-                    <div class="metric-label">Behavior</div>
-                </div>
-            </div>
-
-            <!-- New Cards Section -->
-            <div class="rc-new-cards-section">
-                <!-- Metrics & Numbers -->
-                <div class="rc-new-card">
-                    <h4>Metrics & Numbers</h4>
-                    <div class="metrics-numbers-grid" id="metricsNumbersGrid">
-                        <div class="metric-number-item">
-                            <div class="metric-num-value" id="metricTotalCourses">--</div>
-                            <div class="metric-num-label">Courses</div>
-                        </div>
-                        <div class="metric-number-item">
-                            <div class="metric-num-value" id="metricTotalAssignments">--</div>
-                            <div class="metric-num-label">Assignments</div>
-                        </div>
-                        <div class="metric-number-item">
-                            <div class="metric-num-value" id="metricCompletedTasks">--</div>
-                            <div class="metric-num-label">Completed</div>
-                        </div>
-                        <div class="metric-number-item">
-                            <div class="metric-num-value" id="metricPendingTasks">--</div>
-                            <div class="metric-num-label">Pending</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="rc-new-card">
-                    <h4>Notifications</h4>
-                    <div class="notifications-list" id="studentNotificationsList">
-                        <!-- Notifications rendered by JS -->
-                    </div>
-                </div>
-
-                <!-- Graph -->
-                <div class="rc-new-card graph-card">
-                    <h4>Progress Chart</h4>
-                    <div class="student-graph-container">
-                        <canvas id="studentProgressChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Social Circle -->
-                <div class="rc-new-card">
-                    <h4>Social Circle</h4>
-                    <div class="social-friends-list spaced" id="socialFriendsList">
-                        <!-- Friend avatars rendered by JS -->
+                    <div class="header-grade-row">
+                        <span class="grade-label">Average Grade:</span>
+                        <span class="grade-value" id="pAvg">--</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Event View Popup -->
-<div class="event-view-popup-overlay" id="eventViewPopup">
-    <div class="event-view-popup">
-        <div class="event-view-popup-header">
-            <h3><i class="fas fa-calendar-day"></i> <span id="eventPopupDate">Events</span></h3>
-            <button type="button" class="event-popup-close" onclick="closeEventPopup()" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="event-view-popup-body" id="eventPopupBody">
-            <!-- Events rendered by JS -->
-        </div>
-    </div>
-</div>
-
-<!-- Teacher's Log Full Popup -->
-<div class="modal-overlay" id="logsFullPopup">
-    <div class="modal-content logs-popup-content">
-        <div class="modal-header">
-            <h2>Teacher's Log History</h2>
-            <button type="button" class="modal-close" onclick="closeLogsPopup()" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body logs-popup-body">
-            <div class="logs-popup-layout">
-                <div class="logs-popup-calendar">
-                    <div class="logs-cal-header">
-                        <button type="button" onclick="navigateLogsCalendar(-1)" aria-label="Previous month">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span id="logsCalendarTitle">December 2025</span>
-                        <button type="button" onclick="navigateLogsCalendar(1)" aria-label="Next month">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+        <!-- CONTENT GRID -->
+        <div class="profile-content-grid">
+            
+            <!-- LEFT COLUMN: Bio & Activity -->
+            <div class="profile-col-left">
+                <!-- BIO & INTERESTS -->
+                <div class="profile-card bio-card">
+                    <div class="card-header-row">
+                        <h3>Bio & Interests</h3>
                     </div>
-                    <div class="logs-cal-weekdays">
-                        <span>Su</span><span>M</span><span>Tu</span><span>W</span><span>Th</span><span>F</span><span>Sa</span>
+                    <div class="bio-grid">
+                        <div class="bio-item">
+                            <label>Date of Birth</label>
+                            <div id="pDob">--</div>
+                        </div>
+                        <div class="bio-item">
+                            <label>Tutor</label>
+                            <div id="pTutor">--</div>
+                        </div>
                     </div>
-                    <div class="logs-cal-days" id="logsCalendarDays">
-                        <!-- Days rendered by JS -->
+                    <div class="bio-item interests-section">
+                        <label>I Like To...</label>
+                        <div class="tags-container" id="pInterests">
+                            <!-- Tags injected via JS -->
+                        </div>
                     </div>
                 </div>
-                <div class="logs-popup-entries">
-                    <h4>Recent Notes</h4>
-                    <div id="logsPopupList">
-                        <!-- Entries rendered by JS -->
+
+                <!-- RECENT ACTIVITY -->
+                <div class="profile-card activity-card">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="pActivity">
+                       <!-- JS Injected -->
                     </div>
                 </div>
             </div>
+
+            <!-- RIGHT COLUMN: Analytics & Notes -->
+            <div class="profile-col-right">
+                
+                <!-- ACADEMIC OVERVIEW -->
+                <div class="profile-card chart-card">
+                    <div class="card-header-row">
+                        <h3>Academic Overview</h3>
+                        <div class="attendance-badge">
+                            <span class="att-label">Attendance</span>
+                            <span class="att-value" id="pAttendanceRate">--%</span>
+                        </div>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                    <div class="recent-grades-section">
+                        <h4>Recent Grades</h4>
+                        <div class="grades-row" id="pRecentGrades">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEACHER'S NOTES -->
+                <div class="profile-card notes-card">
+                    <h3>Teacher's Notes</h3>
+                    <div class="notes-input-wrapper">
+                         <textarea id="pTeacherNotes" placeholder="Add a note about this student..."></textarea>
+                    </div>
+                    <div class="notes-footer">
+                        <span id="notesStatus">Auto-saved</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
+
 </div>
 
 <script>
     const serverStudentsData = {{ students_json| safe }};
-    const serverEventsData = {{ events_json| safe }};
-    const serverCoursesData = {{ courses_json| safe }};
-    const teacherFirstName = "{{ teacher_first_name|default:'Demo' }}";
 </script>
-<script src="{% static 'js/students-new.js' %}"></script>
+<script src="{% static 'js/students-new.js' %}?v=3"></script>
 {% endblock %}

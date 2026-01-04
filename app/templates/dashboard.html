@@ -1,6 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- ACTION CENTER (SLOT MACHINE TICKER) -->
+<div class="action-center-container">
+    <!-- Unread Messages -->
+    <div class="ac-section">
+        <div class="ac-slot-view">
+            <div class="ac-slot-track" id="acTrackMessages">
+                <!-- JS will populate -->
+            </div>
+        </div>
+        <div class="ac-static-count">
+            <span class="count-number" id="acCountMessages">4</span>
+            <span class="count-label">Unread Messages</span>
+        </div>
+    </div>
+
+    <div class="ac-divider"></div>
+
+    <!-- Active Topics -->
+    <div class="ac-section">
+        <div class="ac-slot-view">
+            <div class="ac-slot-track" id="acTrackTopics">
+                <!-- JS will populate -->
+            </div>
+        </div>
+        <div class="ac-static-count">
+            <span class="count-number" id="acCountTopics">8</span>
+            <span class="count-label">Active Topics</span>
+            <canvas id="acSparkline" width="60" height="20" style="margin-left:10px;"></canvas>
+        </div>
+    </div>
+
+    <div class="ac-divider"></div>
+
+    <!-- Missed Deadlines -->
+    <div class="ac-section">
+        <div class="ac-slot-view">
+            <div class="ac-slot-track" id="acTrackDeadlines">
+                <!-- JS will populate -->
+            </div>
+        </div>
+        <div class="ac-static-count">
+            <span class="count-number" id="acCountDeadlines">5</span>
+            <span class="count-label">Missed Deadlines</span>
+        </div>
+    </div>
+</div>
+
 <!-- TOP ROW: My Courses + Upcoming Events -->
 <div class="dashboard-top-row">
     <!-- MY COURSES (Left Side) -->

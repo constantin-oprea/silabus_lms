@@ -49,84 +49,44 @@
   <body class="{% block body_class %}{% endblock %}">
     <!-- TOP NAVIGATION BAR -->
     <header class="app-header">
-      <div class="app-header-left">
-        <!-- Hamburger Menu Toggle -->
-        <button
-          type="button"
-          class="hamburger-btn"
-          id="sidebarToggle"
-          aria-label="Toggle sidebar"
-          aria-expanded="true"
-        >
-          <i class="fas fa-bars"></i>
-        </button>
-        <!-- Logo in Top Navbar -->
-        <a href="{% url 'dashboard:dashboard' %}" class="header-logo">
-          <img
-            src="{% static 'images/silabusLMS_official_logo.jpg' %}"
-            alt="SilabusLMS: see.think.wonder"
-            class="header-logo-img"
-          />
-        </a>
-      </div>
-      <div class="app-header-right">
-        <!-- Notifications Bell -->
-        <div class="notification-wrapper" id="notificationWrapper">
-          <button
-            type="button"
-            class="nav-icon-btn"
-            id="notificationBtn"
-            aria-label="Notifications"
-            style="opacity: 1; visibility: visible; display: flex"
-          >
-            <i class="fas fa-bell"></i>
-          </button>
-          <span class="notification-badge" id="notificationBadge"></span>
-          <div class="notification-dropdown" id="notificationDropdown">
-            <div class="notification-dropdown-header">
-              <h4>Notifications</h4>
-              <button type="button" class="mark-all-read" id="markAllRead">
-                Mark all read
-              </button>
-            </div>
-            <div class="notification-list" id="notificationList">
-              <!-- Rendered by JS -->
-            </div>
-          </div>
+        <!-- Logo (Left) -->
+        <div class="app-header-left">
+             <img src="{% static 'images/silabus_logo_full.png' %}" alt="SilabusLMS" class="header-logo-img-main">
         </div>
 
-        <!-- Date: DD/MMM/YYYY -->
-        <span class="nav-date" id="navDate">02/Jan/2026</span>
+        <!-- Info (Right) -->
+        <div class="app-header-right">
+            <!-- Session Info (unified style) -->
+            <div class="session-info-container">
+                <span class="session-label">Your next session starts in</span>
+                <span class="session-highlight">15 min</span>
+                <span class="session-divider">|</span>
+                <span class="session-details">Room IIIC, Philosophy</span>
+            </div>
 
-        <!-- Time: HH:mm (24h) -->
-        <span class="nav-time" id="navTime">02:55</span>
+            <!-- Date/Time Block -->
+            <div class="datetime-block">
+                <span class="nav-date" id="navDate">04/Jan/2026</span>
+                <span class="nav-time" id="navTime">04:48</span>
+            </div>
 
-        <!-- User Profile Avatar -->
-        <div class="user-profile-nav" id="userProfileNav">
-          <button
-            type="button"
-            class="profile-trigger"
-            id="profileTrigger"
-            aria-label="User profile menu"
-          >
-            <img
-              src="{% static 'images/admin_user.jpg' %}"
-              class="nav-avatar"
-              alt="User avatar"
-            />
-          </button>
-          <!-- Dropdown Menu -->
-          <div class="profile-dropdown" id="profileDropdown">
-            <a href="{% url 'settings_app:settings' %}" class="dropdown-item">
-              <i class="fas fa-cog"></i> Settings
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="{% url 'core:logout' %}" class="dropdown-item">
-              <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-          </div>
+            <!-- User Profile Avatar -->
+            <div class="user-profile-nav" id="userProfileNav">
+                <button type="button" class="profile-trigger" id="profileTrigger" aria-label="User profile menu">
+                    <img src="{% static 'images/admin_user.jpg' %}" class="nav-avatar" alt="User avatar" />
+                </button>
+                <!-- Dropdown Menu -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{% url 'settings_app:settings' %}" class="dropdown-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'core:logout' %}" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
     </header>
 
     <!-- 3-COLUMN LAYOUT -->

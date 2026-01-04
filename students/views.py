@@ -25,7 +25,7 @@ def students_view(request):
     events = Event.objects.all().order_by("event_date")
 
     # Serialize data to JSON for JavaScript
-    students_data = [student.to_dict() for student in students_list]
+    students_data = [student.to_profile_dict() for student in students_list]
     courses_data = [course.to_dict() for course in courses]
     events_data = [event.to_dict() for event in events]
 

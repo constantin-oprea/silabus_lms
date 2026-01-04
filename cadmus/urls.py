@@ -21,3 +21,10 @@ urlpatterns = [
     # API URLs - direct mapping to avoid duplicate 'students' in path
     path("api/students/top/", students_api.top_students_api, name="api_top_students"),
 ]
+
+# Serve media files in development
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

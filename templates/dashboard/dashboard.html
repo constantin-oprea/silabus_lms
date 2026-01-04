@@ -1,119 +1,124 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block content %}
+<!-- ACTION CENTER (SLOT MACHINE TICKER) -->
+<!-- ACTION CENTER BANNER -->
+<div class="action-center-container">
+    <!-- Unread Messages -->
+    <div class="ac-section" id="acSectionMessages">
+        <div class="ac-count-display" id="acCountMessages">-</div>
+        <div class="ac-category-label">Unread Messages</div>
+        <div class="ac-summary-text" id="acSummaryMessages">Loading...</div>
+    </div>
 
-<!-- MY COURSES SECTION -->
-<div class="courses-section">
+    <div class="ac-divider"></div>
+
+    <!-- Active Topics -->
+    <div class="ac-section" id="acSectionTopics">
+        <div class="ac-count-display" id="acCountTopics">-</div>
+        <div class="ac-category-label">Active Topics</div>
+        <div class="ac-summary-text" id="acSummaryTopics">Loading...</div>
+    </div>
+
+    <div class="ac-divider"></div>
+
+    <!-- Missed Deadlines -->
+    <div class="ac-section" id="acSectionDeadlines">
+        <div class="ac-count-display" id="acCountDeadlines">-</div>
+        <div class="ac-category-label">Missed Deadlines</div>
+        <div class="ac-summary-text" id="acSummaryDeadlines">Loading...</div>
+    </div>
+</div>
+
+
+<!-- MY COURSES (Full Width) -->
+<div class="courses-section-fullwidth">
     <div class="courses-section-header">
-        <h3 class="section-title">My Courses</h3>
-        <div class="courses-header-actions">
-            <button type="button" class="add-course-btn" id="addCourseBtn" title="Add Course" aria-label="Add Course">
-                <i class="fas fa-plus"></i> New course
-            </button>
-        </div>
+        <h3 class="section-title">MY COURSES</h3>
     </div>
     <div class="courses-carousel-wrapper">
         <div class="courses-grid" id="coursesGrid">
             <!-- Course cards rendered by JS -->
         </div>
-        <div class="carousel-nav-bottom-right">
-            <button type="button" class="carousel-nav-btn" id="coursesPrev" title="Previous" aria-label="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button type="button" class="carousel-nav-btn" id="coursesNext" title="Next" aria-label="Next">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+        <!-- Dot Navigation -->
+        <div class="courses-dot-nav" id="coursesDotNav">
+            <span class="course-dot active" data-page="0"></span>
+            <span class="course-dot" data-page="1"></span>
         </div>
     </div>
 </div>
 
-<!-- STUDENT PERFORMANCE ANALYTICS - D3.js Powered -->
+
+<!-- STUDENT PERFORMANCE ANALYTICS -->
 <div class="analytics-section">
     <div class="analytics-section-header">
         <h3 class="section-title">Student Performance Analytics</h3>
+        <button type="button" class="add-analytics-btn" id="addAnalyticsBtn" title="Add Analytics" aria-label="Add Analytics">
+                <i class="fas fa-plus"></i>
+        </button>
     </div>
-    
-    <!-- Responsive Bootstrap Grid: Stack on mobile, side-by-side on desktop -->
-    <div class="row g-3">
-        <!-- LEFT: Analytics Controls -->
-        <div class="col-12 col-lg-3" id="analytics-controls">
-            <div class="analytics-card h-100">
-                <div class="analytics-card-header">
-                    <h4>Filters</h4>
-                </div>
-                <div class="analytics-controls-body">
-                    <div class="filter-group">
-                        <label for="d3CourseFilter">Course</label>
-                        <select id="d3CourseFilter" class="analytics-filter-select">
-                            <option value="all">All Courses</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="d3DateFilter">Time Period</label>
-                        <select id="d3DateFilter" class="analytics-filter-select">
-                            <option value="week" selected>Last Week</option>
-                            <option value="2weeks">Last 2 Weeks</option>
-                            <option value="month">Last Month</option>
-                            <option value="semester1">Semester 1</option>
-                            <option value="semester2">Semester 2</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="d3CategoryFilter">Category</label>
-                        <select id="d3CategoryFilter" class="analytics-filter-select">
-                            <option value="all">All Categories</option>
-                            <option value="essay">Essays</option>
-                            <option value="quiz">Quizzes</option>
-                            <option value="oral">Spoken Tasks</option>
-                            <option value="homework">Homework</option>
-                            <option value="exam">Exams</option>
-                        </select>
-                    </div>
-                    <!-- Grade Legend -->
-                    <div class="grade-legend mt-3">
-                        <h5>Grade Scale</h5>
-                        <div class="legend-item"><span class="legend-color legend-ad"></span> AD (10)</div>
-                        <div class="legend-item"><span class="legend-color legend-a"></span> A (9)</div>
-                        <div class="legend-item"><span class="legend-color legend-b"></span> B (7-8)</div>
-                        <div class="legend-item"><span class="legend-color legend-c"></span> C (5-6)</div>
-                        <div class="legend-item"><span class="legend-color legend-d"></span> D (1-4)</div>
-                    </div>
+    <div class="analytics-grid">
+        <!-- GRADING CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Grading Distribution</h4>
+                <div class="analytics-filters">
+                    <select id="gradingCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="gradingDateFilter" class="analytics-filter-select">
+                        <option value="week">Last Week</option>
+                        <option value="month">Last Month</option>
+                        <option value="all" selected>All Period</option>
+                    </select>
                 </div>
             </div>
-        </div>
-        
-        <!-- CENTER: Main Sunburst Visualization -->
-        <div class="col-12 col-lg-6" id="main-sunburst-container">
-            <div class="analytics-card h-100">
-                <div class="analytics-card-header">
-                    <h4>Grade Distribution by Category</h4>
-                    <span class="chart-hint">Click a segment to filter</span>
-                </div>
-                <div class="d3-chart-container">
-                    <svg id="sunburstChart" class="d3-svg-responsive"></svg>
-                </div>
-                <div id="sunburstTooltip" class="d3-tooltip"></div>
+            <div class="chart-container">
+                <canvas id="gradingChart"></canvas>
             </div>
         </div>
-        
-        <!-- RIGHT: Workload Timeline / Participation -->
-        <div class="col-12 col-lg-3" id="workload-timeline">
-            <div class="analytics-card h-100">
-                <div class="analytics-card-header">
-                    <h4>Participation Trend</h4>
+
+        <!-- PARTICIPATION CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Class Participation</h4>
+                <div class="analytics-filters">
+                    <select id="participationCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="participationDateFilter" class="analytics-filter-select">
+                        <option value="week">Last Week</option>
+                        <option value="month">Last Month</option>
+                        <option value="all" selected>All Period</option>
+                    </select>
                 </div>
-                <div class="d3-chart-container d3-chart-line">
-                    <svg id="participationLineChart" class="d3-svg-responsive"></svg>
+            </div>
+            <div class="chart-container">
+                <canvas id="participationChart"></canvas>
+            </div>
+        </div>
+
+        <!-- HOMEWORK CHART -->
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                <h4>Homework Completion</h4>
+                <div class="analytics-filters">
+                    <select id="homeworkCourseFilter" class="analytics-filter-select">
+                        <option value="all">All Courses</option>
+                    </select>
+                    <select id="homeworkDateFilter" class="analytics-filter-select">
+                        <option value="week">Last Week</option>
+                        <option value="month">Last Month</option>
+                        <option value="all" selected>All Period</option>
+                    </select>
                 </div>
-                <div id="selectedGradeInfo" class="selected-info">
-                    <span>All students</span>
-                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="homeworkChart"></canvas>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- ADD COURSE MODAL -->
 <div class="modal-overlay" id="addCourseModal">
@@ -156,7 +161,10 @@
                     <label>Room <span class="required">*</span></label>
                     <input type="text" id="courseRoom" placeholder="III A, High School" class="form-input">
                 </div>
-
+                <div class="form-group">
+                    <label>Course Name <span class="required">*</span></label>
+                    <input type="text" id="courseSubject" placeholder="Social Studies" class="form-input">
+                </div>
             </div>
 
             <div class="form-group">
@@ -283,11 +291,59 @@
                 </div>
             </div>
 
+            <!-- Course Assignment (conditional) -->
+            <div class="form-group course-assignment-group" id="courseAssignmentGroup" style="display: none;">
+                <label>Assign to Course(s)</label>
+                <div class="course-checkboxes" id="courseCheckboxes">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignCourse[]" value="social_studies" id="ac_social_studies">
+                        <span class="checkbox-label">Social Studies</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignCourse[]" value="philosophy" id="ac_philosophy">
+                        <span class="checkbox-label">Philosophy</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignCourse[]" value="projects" id="ac_projects">
+                        <span class="checkbox-label">Projects</span>
+                    </label>
+                </div>
+
+                <label class="mt-16">Assign to Group(s)</label>
+                <div class="course-checkboxes" id="groupCheckboxes">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="III A" id="ag_iii_a">
+                        <span class="checkbox-label">III A</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="III B" id="ag_iii_b">
+                        <span class="checkbox-label">III B</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="IV A" id="ag_iv_a">
+                        <span class="checkbox-label">IV A</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="IV B" id="ag_iv_b">
+                        <span class="checkbox-label">IV B</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="V" id="ag_v">
+                        <span class="checkbox-label">V</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="assignGroup[]" value="2nd Primary" id="ag_2nd_p">
+                        <span class="checkbox-label">2nd Primary</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- Participants -->
             <div class="form-group">
                 <label>Participants <span class="optional">(optional)</span></label>
                 <textarea id="eventParticipants" class="form-input form-textarea"
-                    placeholder="Enter names, one per line..."></textarea>
+                    placeholder="Enter names, one per line...&#10;John Smith&#10;Maria Garcia"></textarea>
+                <p class="form-hint">Names will be automatically formatted as a list.</p>
             </div>
 
             <!-- Notes -->
@@ -346,7 +402,4 @@
     const serverEventsData = JSON.parse(document.getElementById('serverEventsJSON').textContent);
     const serverCoursesData = JSON.parse(document.getElementById('serverCoursesJSON').textContent);
 </script>
-
-<!-- D3.js Analytics Module -->
-<script src="{% static 'js/d3-analytics.js' %}"></script>
 {% endblock %}

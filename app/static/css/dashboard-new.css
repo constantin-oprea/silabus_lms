@@ -164,9 +164,14 @@ body.new-dashboard-layout {
 }
 
 .nav-datetime {
-    color: rgba(255, 255, 255, 0.8);
+    color: #ffffff !important;
     font-size: 13px;
     font-weight: 500;
+}
+
+/* Force time color white per user request */
+.nav-time, #navTime {
+    color: #ffffff !important;
 }
 
 .nav-avatar {
@@ -792,14 +797,147 @@ body.new-dashboard-layout {
     text-decoration: none !important;
 }
 
-.course-illustration {
-    height: 160px;
-    background: linear-gradient(135deg, #f0f4f5, #e8eef0);
+/* ===== FULL-WIDTH COURSES SECTION ===== */
+.courses-section-fullwidth {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.courses-section-fullwidth .courses-section-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.courses-section-fullwidth .section-title {
+    color: #001F3F;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Dot Navigation */
+.courses-dot-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 10px 0;
+}
+
+.course-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.course-dot:hover {
+    background: #999;
+    transform: scale(1.15);
+}
+
+.course-dot.active {
+    background: #2E5D4B;
+    width: 32px;
+    border-radius: 6px;
+}
+
+/* ===== ACTION CENTER - SIMPLIFIED BANNER ===== */
+.action-center-container {
+    background: linear-gradient(135deg, #2d5f4e 0%, #2C5545 100%);
+    border-radius: 16px;
+    padding: 30px 40px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(44, 85, 69, 0.25);
+    gap: 40px;
+}
+
+.ac-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ac-section:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.ac-divider {
+    width: 1px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Count Display */
+.ac-count-display {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: #CCFF00;
+    margin-bottom: 8px;
+}
+
+/* Category Label */
+.ac-category-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 4px;
+}
+
+/* Summary Text */
+.ac-summary-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+}
+
+
+/* === RIGHT SIDE: STATIC COUNT === */
+.ac-static-count {
+    display: flex;
+    flex-direction: column; /* Stack vertically */
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    gap: 4px;
+    min-width: fit-content;
+    text-align: center;
 }
+
+.count-number {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+}
+
+.count-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+}
+
+
 
 .course-icon-wrapper {
     width: 100%;
@@ -2328,4 +2466,368 @@ body.new-dashboard-layout {
     .chart-hint {
         display: none;
     }
+}
+
+/* ===== VISUAL REDESIGN STYLES ===== */
+
+/* GREEN DASHBOARD BANNER */
+.dashboard-banner {
+    background: #2E5D4B; /* Dark Green */
+    border-radius: 8px; /* Slightly sharper than previous */
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.banner-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.banner-count {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.banner-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.banner-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.banner-sparkline {
+    margin-top: 5px;
+}
+
+/* MY COURSES SECTION */
+.section-container {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.courses-horizontal-list {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px; /* Space for scrollbar if any */
+}
+
+/* Redesigned Course Card */
+.course-card-new {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: none;
+    /* Removed fixed min/max-width to allow carousel CSS to control sizing */
+}
+
+.course-card-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.course-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #eee;
+}
+
+.course-card-info h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+}
+
+.course-status {
+    font-size: 10px;
+    color: #2E5D4B;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.course-stats-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #888;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 8px 0;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.course-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.badge-pill {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+}
+
+.badge-red { background: #D9534F; }
+.badge-orange { background: #E67E22; }
+
+/* ANALYTICS ROW */
+.analytics-row {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+}
+
+.momentum-container, .risk-students-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.card-subtitle {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.chart-filter-select {
+    font-size: 12px;
+    border: 1px solid #eee;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #555;
+    outline: none;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    font-size: 11px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* AT RISK LIST */
+.risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.risk-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.risk-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.risk-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.risk-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.risk-detail {
+    font-size: 12px;
+    color: #555;
+}
+
+/* LATEST COMMENTS (Right Sidebar) */
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment-item {
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.comment-text {
+    font-size: 11px;
+    color: #444;
+    line-height: 1.5;
+    margin: 0;
+    font-style: italic;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .analytics-row {
+        grid-template-columns: 1fr;
+    }
+    .banner-divider {
+        display: none;
+    }
+    .dashboard-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+}
+
+/* ===== REFACTORED INLINE STYLES ===== */
+
+/* Analytics Section Title */
+.section-title-analytics {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Legend Dots with Colors */
+.legend-item .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.dot-philosophy { background: #5A9CB5; }
+.dot-avg-iiib { background: #D9534F; }
+.dot-avg-ivc { background: #9370DB; }
+.dot-avg-iva { background: #F0AD4E; }
+.dot-avg-va { background: #5CB85C; }
+
+/* Chart Area Container */
+.chart-area {
+    height: 300px;
+    position: relative;
+}
+
+/* Top 10 Panel Hidden by Default */
+.students-panel-hidden {
+    display: none;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 30px;
+}
+
+.comments-section .panel-section-header h3 {
+    font-family: 'Cinzel', serif;
+    color: #2E5D4B;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Comment Item Base */
+.comment-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 4px solid #2E5D4B;
+}
+
+/* Comment Item Accent Colors */
+.comment-item.accent-green { border-left-color: #2E5D4B; }
+.comment-item.accent-red { border-left-color: #D9534F; }
+.comment-item.accent-orange { border-left-color: #F0AD4E; }
+.comment-item.accent-blue { border-left-color: #5BC0DE; }
+.comment-item.accent-purple { border-left-color: #9370DB; }
+
+/* Comment Text */
+.comment-text {
+    font-style: italic;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+/* Comment Meta */
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    font-weight: 600;
 }
