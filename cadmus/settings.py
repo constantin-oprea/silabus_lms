@@ -86,9 +86,7 @@ if ON_PYTHONANYWHERE:
             "NAME": os.environ.get("MYSQL_DATABASE", "constantinoprea$silabus"),
             "USER": os.environ.get("MYSQL_USER", "constantinoprea"),
             "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
-            "HOST": os.environ.get(
-                "MYSQL_HOST", "constantinoprea.mysql.pythonanywhere-services.com"
-            ),
+            "HOST": "ConstantinOprea.mysql.pythonanywhere-services.com",
             "PORT": "3306",
             "OPTIONS": {
                 "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
