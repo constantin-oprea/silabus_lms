@@ -1,0 +1,51 @@
+/* ====================================
+   MY LAYOUT - Main Container & Content
+   ==================================== */
+
+/* Container for My Layout Structure */
+.my-layout-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fa;
+    padding-top: 70px; /* Account for header */
+}
+
+/* Main Content Area (Center) */
+.my-layout-main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width, 80px);
+    margin-right: var(--panel-width, 350px);
+    padding: 30px;
+    max-width: calc(100% - var(--sidebar-width, 80px) - var(--panel-width, 350px));
+    transition: margin-right 0.3s ease;
+}
+
+/* When right panel is collapsed */
+.my-layout-right-panel.collapsed ~ .my-layout-main-content,
+.my-layout-container:has(.my-layout-right-panel.collapsed) .my-layout-main-content {
+    margin-right: 0;
+    max-width: calc(100% - var(--sidebar-width, 80px));
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1400px) {
+    .my-layout-main-content {
+        margin-right: 300px;
+        max-width: calc(100% - 80px - 300px);
+    }
+}
+
+@media (max-width: 1200px) {
+    .my-layout-main-content {
+        margin-right: 0;
+        max-width: calc(100% - 80px);
+    }
+}
+
+@media (max-width: 768px) {
+    .my-layout-main-content {
+        margin-left: 60px;
+        max-width: calc(100% - 60px);
+        padding: 20px;
+    }
+}

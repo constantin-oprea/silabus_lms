@@ -39,9 +39,21 @@
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/calendar.css' %}?v=99" />
     <link rel="stylesheet" href="{% static 'css/dashboard-new.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/dashboard-hybrid.css' %}" />
+
+    <!-- MY LAYOUT Styles -->
+    <link rel="stylesheet" href="{% static 'css/my-layout-main.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/my-layout-sidebar.css' %}?v=2" />
+    <link
+      rel="stylesheet"
+      href="{% static 'css/my-layout-right-panel.css' %}"
+    />
 
     <!-- D3.js v7 for Analytics Visualizations -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Mock Data for My Layout -->
+    <script src="{% static 'js/mockData.js' %}"></script>
 
     {% block head_extra %}{% endblock %}
   </head>
@@ -49,62 +61,85 @@
   <body class="{% block body_class %}{% endblock %}">
     <!-- TOP NAVIGATION BAR -->
     <header class="app-header">
-        <!-- Logo (Left) -->
-        <div class="app-header-left">
-             <img src="{% static 'images/silabus_logo_full.png' %}" alt="SilabusLMS" class="header-logo-img-main">
+      <!-- Logo (Left) -->
+      <div class="app-header-left" style="visibility: hidden">
+        <!-- Hamburger/Waffle Menu Button -->
+        <button
+          type="button"
+          class="hamburger-btn"
+          id="sidebarToggle"
+          aria-label="Toggle sidebar"
+          aria-expanded="true"
+        >
+          <i class="bi bi-list"></i>
+        </button>
+        <img
+          src="{% static 'images/silabus_logo_full.png' %}"
+          alt="SilabusLMS"
+          class="header-logo-img-main"
+        />
+      </div>
+
+      <!-- Info (Right) -->
+      <div class="app-header-right">
+        <!-- Session Info (dynamic - populated by JS) -->
+        <div
+          class="session-info-container"
+          id="headerSessionInfo"
+          style="display: none"
+        >
+          <span class="session-label">Your next session starts in</span>
+          <span class="session-highlight" id="headerSessionMinutes">--</span>
+          <span class="session-divider">|</span>
+          <span class="session-details" id="headerSessionDetails">--</span>
         </div>
 
-        <!-- Info (Right) -->
-        <div class="app-header-right">
-            <!-- Session Info (unified style) -->
-            <div class="session-info-container">
-                <span class="session-label">Your next session starts in</span>
-                <span class="session-highlight">15 min</span>
-                <span class="session-divider">|</span>
-                <span class="session-details">Room IIIC, Philosophy</span>
-            </div>
-
-            <!-- Date/Time Block -->
-            <div class="datetime-block">
-                <span class="nav-date" id="navDate">04/Jan/2026</span>
-                <span class="nav-time" id="navTime">04:48</span>
-            </div>
-
-            <!-- User Profile Avatar -->
-            <div class="user-profile-nav" id="userProfileNav">
-                <button type="button" class="profile-trigger" id="profileTrigger" aria-label="User profile menu">
-                    <img src="{% static 'images/admin_user.jpg' %}" class="nav-avatar" alt="User avatar" />
-                </button>
-                <!-- Dropdown Menu -->
-                <div class="profile-dropdown" id="profileDropdown">
-                    <a href="{% url 'settings_app:settings' %}" class="dropdown-item">
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{% url 'core:logout' %}" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                </div>
-            </div>
+        <!-- Date/Time Block -->
+        <div class="datetime-block">
+          <span class="nav-date" id="navDate">04/Jan/2026</span>
+          <span class="nav-time" id="navTime">04:48</span>
         </div>
+
+        <!-- User Profile Avatar -->
+        <div class="user-profile-nav" id="userProfileNav">
+          <button
+            type="button"
+            class="profile-trigger"
+            id="profileTrigger"
+            aria-label="User profile menu"
+          >
+            <img
+              src="{% static 'images/admin_user.jpg' %}"
+              class="nav-avatar"
+              alt="User avatar"
+            />
+          </button>
+          <!-- Dropdown Menu -->
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="{% url 'settings_app:settings' %}" class="dropdown-item">
+              <i class="fas fa-cog"></i> Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'core:logout' %}" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <!-- 3-COLUMN LAYOUT -->
-    <div class="app-layout" id="appLayout">
-      <!-- LEFT SIDEBAR - Navigation + Top 10 Students -->
-      <aside class="left-sidebar" id="leftSidebar">
-        {% include 'components/_sidebar.html' %}
-      </aside>
+    <!-- MY LAYOUT STRUCTURE -->
+    <div class="my-layout-container">
+      <!-- FIXED LEFT SIDEBAR (No Hamburger) -->
+      {% include 'components/_my_layout_sidebar.html' %}
 
-      <!-- CENTER CONTENT - DYNAMIC (Expands when sidebar collapsed) -->
-      <main class="main-content" id="mainContent">
+      <!-- MAIN CONTENT AREA -->
+      <main class="my-layout-main-content">
         {% block content %} {% endblock %}
       </main>
 
-      <!-- RIGHT SIDEBAR - Calendar and Upcoming Events -->
-      <aside class="right-panel" id="rightPanel">
-        {% include 'components/_right_panel.html' %}
-      </aside>
+      <!-- RIGHT SIDE PANEL (Collapsible) -->
+      {% include 'components/_my_layout_right_panel.html' %}
     </div>
 
     <!-- Data for JavaScript -->
@@ -121,6 +156,8 @@
     <!-- Custom JS -->
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/dashboard-new.js' %}"></script>
+    <script src="{% static 'js/sidebar-split.js' %}"></script>
+    <script src="{% static 'js/my-layout-right-panel.js' %}"></script>
 
     <!-- Sidebar Toggle & DateTime Script -->
     <script>

@@ -1,0 +1,46 @@
+<!-- MY LAYOUT - RIGHT SIDE PANEL -->
+{% load static %}
+
+<div class="my-layout-right-panel" id="myLayoutRightPanel">
+  <div class="right-panel-content">
+    <!-- WIDGET A: TOP 10 STUDENTS (Carousel) -->
+    <div class="right-panel-widget students-widget">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="widget-title m-0">TOP 10 STUDENTS</h3>
+          <button class="collapse-panel-btn" id="collapsePanelBtn" title="Collapse Panel">
+            <i class="bi bi-chevron-double-left"></i>
+          </button>
+      </div>
+      
+      <div class="students-carousel" id="studentsCarousel">
+        <div class="students-grid" id="studentsGrid">
+          <!-- Student cards will be rendered by JavaScript -->
+        </div>
+        
+        <!-- Carousel Pagination Dots -->
+        <div class="carousel-pagination" id="carouselPagination">
+          <span class="pagination-dot active" data-page="0"></span>
+          <span class="pagination-dot" data-page="1"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WIDGET B: UPCOMING EVENTS (Latest 3) -->
+    <div class="right-panel-widget events-widget">
+      <h3 class="widget-title">Upcoming Events</h3>
+      
+      <div class="events-list" id="eventsList">
+        <!-- Events will be rendered by JavaScript -->
+      </div>
+    </div>
+
+    <!-- WIDGET C: LATEST COMMENTS (Last 4) -->
+    <div class="right-panel-widget comments-widget">
+      <h3 class="widget-title">LATEST COMMENTS</h3>
+      
+      <div class="comments-list" id="commentsList">
+        <!-- Comments will be rendered by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/my-courses.css' %}">
+<script src="{% static 'js/course-create.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="my-courses-page">
+    <!-- Page Header -->
+    <div class="page-header-modern">
+        <div class="header-content">
+            <div>
+                <h1 class="page-title-modern">My Courses</h1>
+                <p class="page-subtitle-modern">Manage and organize all your courses</p>
+            </div>
+            <button class="btn-create-course" id="openCreateCourseModalBtn">
+                <i class="bi bi-plus-lg me-2"></i>
+                Create New Course
+            </button>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="toolbar-modern">
+        <div class="search-box-modern">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" class="search-input-modern" placeholder="Search courses..." id="courseSearch">
+        </div>
+        <div class="filter-group-modern">
+            <select class="filter-select-modern" id="gradeFilter">
+                <option value="">All Grade Levels</option>
+                <option value="K3">Kindergarten 3 years</option>
+                <option value="K4">Kindergarten 4 years</option>
+                <option value="K5">Kindergarten 5 years</option>
+                <option value="1P">1st Primary</option>
+                <option value="2P">2nd Primary</option>
+                <option value="3P">3rd Primary</option>
+                <option value="4P">4th Primary</option>
+                <option value="5P">5th Primary</option>
+                <option value="6P">6th Primary</option>
+                <option value="1HS">I High School</option>
+                <option value="2HS">II High School</option>
+                <option value="3HS">III High School</option>
+                <option value="4HS">IV High School</option>
+                <option value="5HS">V High School</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    {% if courses %}
+    <div class="courses-grid-modern">
+        {% for course in courses %}
+        <div class="course-card-premium" data-grade="{{ course.grade_level }}">
+            <!-- Course Image/Header -->
+            <div class="course-card-header" style="background: linear-gradient(135deg, {{ course.color|default:'#4A8B6F' }} 0%, {{ course.color|default:'#3a7a5f' }} 100%);">
+                {% if course.image %}
+                <img src="{{ course.image.url }}" alt="{{ course.name }}" class="course-header-image">
+                {% endif %}
+                <div class="course-header-overlay">
+                    <h3 class="course-card-title">{{ course.name }}</h3>
+                    {% if course.abbreviation %}
+                    <span class="course-badge-abbreviation">{{ course.abbreviation }}</span>
+                    {% endif %}
+                </div>
+                <div class="course-quick-actions">
+                    <button class="quick-action-btn" title="Edit Course">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="quick-action-btn" title="Course Settings">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course Info -->
+            <div class="course-card-body">
+                <!-- Stats Row -->
+                <div class="course-stats-row">
+                    <div class="stat-item">
+                        <i class="bi bi-people stat-icon"></i>
+                        <span class="stat-value">{{ course.student_count }}</span>
+                        <span class="stat-label">Students</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <i class="bi bi-calendar-check stat-icon"></i>
+                        <span class="stat-value">{{ course.sessions.count }}</span>
+                        <span class="stat-label">Sessions</span>
+                    </div>
+                </div>
+
+                <!-- Course Details -->
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="bi bi-bookmark"></i>
+                        <span>{{ course.section_group }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-mortarboard"></i>
+                        <span>{{ course.get_grade_level_display_full }}</span>
+                    </div>
+                    {% if course.room %}
+                    <div class="detail-item">
+                        <i class="bi bi-door-open"></i>
+                        <span>{{ course.room }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="detail-item">
+                        <i class="bi bi-clock"></i>
+                        <span>{{ course.days_display|default:"No schedule" }}</span>
+                    </div>
+                </div>
+
+                <!-- Enrollment Code -->
+                {% if course.enrollment_code %}
+                <div class="enrollment-code-badge">
+                    <i class="bi bi-qr-code me-1"></i>
+                    <span class="code-text">{{ course.enrollment_code }}</span>
+                    <button class="btn-copy-code" data-code="{{ course.enrollment_code }}" title="Copy enrollment code">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="course-card-actions">
+                    <a href="#" class="btn-card-action btn-primary-card">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Open Course
+                    </a>
+                    <button class="btn-card-action btn-secondary-card">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state-modern">
+        <div class="empty-state-icon">
+            <i class="bi bi-journal-text"></i>
+        </div>
+        <h3 class="empty-state-title">No courses yet</h3>
+        <p class="empty-state-text">Create your first course to get started with managing your classes</p>
+        <button class="btn-create-course" id="openCreateCourseModalEmptyStateBtn">
+            <i class="bi bi-plus-lg me-2"></i>
+            Create Your First Course
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Include the course creation modal -->
+{% include 'components/_course_create_modal.html' %}
+
+<!-- Copy to Clipboard Toast -->
+<div class="toast-notification" id="copyToast">
+    <i class="bi bi-check-circle me-2"></i>
+    <span>Enrollment code copied!</span>
+</div>
+
+<script>
+// Search functionality
+document.getElementById('courseSearch')?.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const courseCards = document.querySelectorAll('.course-card-premium');
+    
+    courseCards.forEach(card => {
+        const courseName = card.querySelector('.course-card-title').textContent.toLowerCase();
+        const courseDetails = card.querySelector('.course-details').textContent.toLowerCase();
+        
+        if (courseName.includes(searchTerm) || courseDetails.includes(searchTerm)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Grade level filter
+document.getElementById('gradeFilter')?.addEventListener('change', function(e) {
+    const filterValue = e.target.value;
+    const courseCards = document.querySelectorAll('.course-card-premium');
+    
+    courseCards.forEach(card => {
+        if (!filterValue || card.dataset.grade === filterValue) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Copy enrollment code
+document.querySelectorAll('.btn-copy-code').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const code = this.dataset.code;
+        
+        navigator.clipboard.writeText(code).then(() => {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        });
+    });
+});
+</script>
+{% endblock %}

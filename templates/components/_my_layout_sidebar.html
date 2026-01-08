@@ -1,0 +1,72 @@
+<!-- GLOBAL SIDEBAR - Premium Unified Navigation -->
+{% load static %}
+
+<div class="my-layout-sidebar">
+  <!-- Logo at Top -->
+  <div class="sidebar-logo">
+    <img src="{% static 'images/silabus-logo.png' %}" alt="SilabusLMS" class="logo-image">
+    <div class="logo-text">
+      <span class="logo-name">SilabusLMS</span>
+      <span class="logo-tagline">see. think. wonder.</span>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <!-- Dashboard (Active) -->
+    <a href="{% url 'dashboard:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" data-page="dashboard">
+      <i class="fa-solid fa-table-columns"></i>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    
+    <!-- Courses (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="courses" onclick="return false;">
+      <i class="fa-solid fa-book-open"></i>
+      <span class="nav-label">Courses</span>
+    </a>
+    
+    <!-- Schedule (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="schedule" onclick="return false;">
+      <i class="fa-regular fa-calendar"></i>
+      <span class="nav-label">Schedule</span>
+    </a>
+    
+    <!-- Students (Active) -->
+    <a href="{% url 'students:students' %}" class="nav-item {% if request.resolver_match.app_name == 'students' %}active{% endif %}" data-page="students">
+      <i class="fa-solid fa-user-graduate"></i>
+      <span class="nav-label">Students</span>
+    </a>
+    
+    <!-- Lesson Plan (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="lesson-plans" onclick="return false;">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span class="nav-label">Lesson Plan</span>
+    </a>
+    
+    <!-- Forum (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="forum" onclick="return false;">
+      <i class="fa-regular fa-comments"></i>
+      <span class="nav-label">Forum</span>
+    </a>
+    
+    <!-- Analytics (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="analytics" onclick="return false;">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span class="nav-label">Analytics</span>
+    </a>
+    
+    <!-- Messages (Inactive) -->
+    <a href="#" class="nav-item inactive" data-page="messages" onclick="return false;">
+      <i class="fa-regular fa-envelope"></i>
+      <span class="nav-label">Messages</span>
+    </a>
+  </nav>
+
+  <!-- Bottom Section: Logout -->
+  <div class="sidebar-bottom">
+    <a href="{% url 'core:logout' %}" class="nav-item" data-page="logout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span class="nav-label">Logout</span>
+    </a>
+  </div>
+</div>

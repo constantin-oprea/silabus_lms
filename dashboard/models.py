@@ -45,12 +45,86 @@ class Course(models.Model):
     Each course is associated with a teacher and can have multiple students enrolled.
     """
 
+    GRADE_LEVEL_CHOICES = [
+        ("K3", "Kindergarten 3 years"),
+        ("K4", "Kindergarten 4 years"),
+        ("K5", "Kindergarten 5 years"),
+        ("1P", "1st Primary"),
+        ("2P", "2nd Primary"),
+        ("3P", "3rd Primary"),
+        ("4P", "4th Primary"),
+        ("5P", "5th Primary"),
+        ("6P", "6th Primary"),
+        ("1HS", "I High School"),
+        ("2HS", "II High School"),
+        ("3HS", "III High School"),
+        ("4HS", "IV High School"),
+        ("5HS", "V High School"),
+    ]
+
+    GRADING_SYSTEM_OPTIONS = [
+        ("official", "Official (AD, A, B, C)"),
+        ("numeric", "Numeric (0-20)"),
+        ("percentage", "Percentage (0-100%)"),
+        ("gamified", "Gamified (Stars/Points)"),
+    ]
+
+    # Identity Fields
     name = models.CharField(max_length=100, help_text='e.g., "Philosophy"')
+    abbreviation = models.CharField(max_length=10, blank=True, help_text='e.g., "PHIL"')
+    color = models.CharField(
+        max_length=7, blank=True, help_text='Hex color code, e.g., "#4A8B6F"'
+    )
+    section_group = models.CharField(
+        max_length=20, blank=True, help_text='e.g., "IIIA"'
+    )
+
+    # Grade Level (single choice)
+    grade_level = models.CharField(
+        max_length=5,
+        choices=GRADE_LEVEL_CHOICES,
+        blank=True,
+        help_text="Grade level for this course",
+    )
+
+    # Grading Systems (multi-select, stored as JSON list)
+    grading_systems = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='List of grading systems, e.g., ["numeric", "gamified"]',
+    )
+
+    # Syllabus (PDF only)
+    syllabus = models.FileField(
+        upload_to="syllabi/",
+        blank=True,
+        null=True,
+        help_text="Upload syllabus PDF",
+    )
+
+    # Course Image
+    image = models.ImageField(
+        upload_to="course_images/",
+        blank=True,
+        null=True,
+        help_text="Upload course cover image",
+    )
+
+    # Legacy fields (kept for compatibility)
     description = models.TextField(blank=True)
-    room = models.CharField(max_length=50, blank=True, help_text='e.g., "III A"')
+    room = models.CharField(max_length=50, blank=True, help_text='e.g., "Room 101"')
     icon_url = models.CharField(max_length=500, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+
+    # Enrollment code for easy student registration
+    enrollment_code = models.CharField(
+        max_length=8,
+        unique=True,
+        blank=True,
+        null=True,
+        help_text="Unique code for student enrollment",
+    )
 
     # Relationships
     teacher = models.ForeignKey(
@@ -75,23 +149,76 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+    def generate_enrollment_code(self):
+        """Generate a unique 8-character enrollment code."""
+        import random
+        import string
+
+        while True:
+            code = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            if not Course.objects.filter(enrollment_code=code).exists():
+                return code
+
+    def save(self, *args, **kwargs):
+        """Override save to generate enrollment code if not set."""
+        if not self.enrollment_code:
+            self.enrollment_code = self.generate_enrollment_code()
+        super().save(*args, **kwargs)
+
     @property
     def student_count(self):
         """Return the number of students enrolled in this course."""
         return self.students.count()
 
+    def get_grade_level_display_full(self):
+        """Return the full display name for the grade level."""
+        return dict(self.GRADE_LEVEL_CHOICES).get(self.grade_level, "")
+
+    def get_grading_systems_display(self):
+        """Return display names for selected grading systems."""
+        options_dict = dict(self.GRADING_SYSTEM_OPTIONS)
+        return [options_dict.get(gs, gs) for gs in (self.grading_systems or [])]
+
+    @property
+    def days_display(self):
+        """Return the days string for the course schedule."""
+        # Calculate days string from Sessions
+        days_list = sorted(list(set([s.day_of_week for s in self.sessions.all()])))
+        # Map full names to short (monday -> Mon)
+        days_map = {
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat",
+            "sunday": "Sun",
+        }
+        return ", ".join([days_map.get(d.lower(), d.capitalize()) for d in days_list])
+
     def to_dict(self):
         """Return a dictionary representation of the course."""
+
         return {
             "id": self.id,
             "name": self.name,
+            "abbreviation": self.abbreviation,
+            "color": self.color,
+            "section_group": self.section_group,
+            "grade_level": self.grade_level,
+            "grade_level_display": self.get_grade_level_display_full(),
+            "grading_systems": self.grading_systems or [],
+            "syllabus_url": self.syllabus.url if self.syllabus else None,
             "description": self.description,
             "room": self.room,
-            "icon_url": self.icon_url,
+            "icon_url": self.image.url if self.image else (self.icon_url or None),
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "student_count": self.student_count,
-            "schedules": [s.to_dict() for s in self.schedules.all()],
+            # Frontend Compatibility Fields for dashboard-new.js
+            "grade": self.section_group,  # Maps 'grade' to section group (e.g. "III A")
+            "days": self.days_display,  # e.g. "Mon, Wed"
+            "schedules": [],  # Legacy
         }
 
 

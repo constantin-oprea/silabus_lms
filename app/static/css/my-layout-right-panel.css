@@ -1,0 +1,294 @@
+/* ====================================
+   MY LAYOUT - RIGHT SIDE PANEL STYLES
+   ==================================== */
+
+:root {
+    --forest-green: #2E5D4B;
+    --lime-green: #CCFF00;
+    --panel-width: 350px;
+}
+
+/* Right Panel Container */
+.my-layout-right-panel {
+    position: fixed;
+    right: 0;
+    top: 70px; /* Below header */
+    width: var(--panel-width);
+    height: calc(100vh - 70px);
+    background: #f9fafb;
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 900;
+    overflow-y: auto;
+}
+
+.my-layout-right-panel.collapsed {
+    transform: translateX(100%);
+}
+
+/* Panel Header with Collapse Button */
+.right-panel-header {
+    padding: 15px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.collapse-panel-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.collapse-panel-btn:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.collapse-panel-btn i {
+    font-size: 20px;
+}
+
+/* Panel Content */
+.right-panel-content {
+    padding: 20px;
+}
+
+/* Widget Styling */
+.right-panel-widget {
+    margin-bottom: 30px;
+}
+
+.widget-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2937;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 16px 0;
+}
+
+/* ===== WIDGET A: TOP 10 STUDENTS ===== */
+
+.students-carousel {
+    position: relative;
+}
+
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.student-card {
+    background: var(--forest-green, #2E5D4B);
+    border-radius: 20px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-2px);
+}
+
+.student-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.student-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.student-avatar i {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.student-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+/* Carousel Pagination */
+.carousel-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+}
+
+.pagination-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-dot.active {
+    background: var(--forest-green, #2E5D4B);
+    width: 24px;
+    border-radius: 10px;
+}
+
+/* ===== WIDGET B: UPCOMING EVENTS ===== */
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.event-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.event-date-badge {
+    width: 56px;
+    height: 56px;
+    background: var(--lime-green, #CCFF00);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.event-date {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+}
+
+.event-month {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1f2937;
+    text-transform: uppercase;
+}
+
+.event-details {
+    flex: 1;
+}
+
+.event-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+}
+
+.event-meta {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+/* ===== WIDGET C: LATEST COMMENTS ===== */
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comment-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid;
+    position: relative;
+}
+
+.comment-card.positive {
+    border-left-color: #10b981;
+}
+
+.comment-card.negative {
+    border-left-color: #ef4444;
+}
+
+.comment-text {
+    font-size: 13px;
+    font-style: italic;
+    color: #374151;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+}
+
+.comment-text::before {
+    content: '"';
+}
+
+.comment-text::after {
+    content: '"';
+}
+
+.comment-meta {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.comment-meta strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1400px) {
+    .my-layout-right-panel {
+        width: 300px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .my-layout-right-panel {
+        transform: translateX(100%);
+    }
+    
+    .my-layout-right-panel.open {
+        transform: translateX(0);
+    }
+}

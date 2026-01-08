@@ -1,405 +1,633 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilabusLMS Dashboard</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon_silabusLMS_official.png' %}">
 
-{% block content %}
-<!-- ACTION CENTER (SLOT MACHINE TICKER) -->
-<!-- ACTION CENTER BANNER -->
-<div class="action-center-container">
-    <!-- Unread Messages -->
-    <div class="ac-section" id="acSectionMessages">
-        <div class="ac-count-display" id="acCountMessages">-</div>
-        <div class="ac-category-label">Unread Messages</div>
-        <div class="ac-summary-text" id="acSummaryMessages">Loading...</div>
-    </div>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <div class="ac-divider"></div>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Active Topics -->
-    <div class="ac-section" id="acSectionTopics">
-        <div class="ac-count-display" id="acCountTopics">-</div>
-        <div class="ac-category-label">Active Topics</div>
-        <div class="ac-summary-text" id="acSummaryTopics">Loading...</div>
-    </div>
+    <!-- Shared Theme & Components -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/upcoming-events.css' %}">
 
-    <div class="ac-divider"></div>
+    <style>
+        /* ... existing reset ... */
+        
+        .sidebar .nav-item.active {
+            background: var(--accent-glow);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(165, 183, 215, 0.2);
+        }
 
-    <!-- Missed Deadlines -->
-    <div class="ac-section" id="acSectionDeadlines">
-        <div class="ac-count-display" id="acCountDeadlines">-</div>
-        <div class="ac-category-label">Missed Deadlines</div>
-        <div class="ac-summary-text" id="acSummaryDeadlines">Loading...</div>
-    </div>
-</div>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-<!-- MY COURSES (Full Width) -->
-<div class="courses-section-fullwidth">
-    <div class="courses-section-header">
-        <h3 class="section-title">MY COURSES</h3>
-    </div>
-    <div class="courses-carousel-wrapper">
-        <div class="courses-grid" id="coursesGrid">
-            <!-- Course cards rendered by JS -->
+        /* --- SCROLLBAR HIDING --- */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- SIDEBAR - Premium Glassmorphism --- */
+        .sidebar {
+            width: 80px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            color: white;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        }
+
+        .sidebar .nav-item {
+            width: 60px;
+            padding: 14px 8px;
+            margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.7); /* Slightly more muted for contrast */
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar .nav-item span {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Inactive State */
+        .sidebar .nav-item.inactive {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .sidebar .nav-item.inactive:hover {
+            opacity: 1;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Hover State */
+        .sidebar .nav-item:not(.inactive):hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Active State - Glassmorphism Gold */
+        /* Note: Specific active state style is above in the style block */
+        
+        .sidebar .nav-item.active i {
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+        }
+
+        .bottom-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .bottom-actions .nav-item {
+            opacity: 0.7;
+        }
+
+        .bottom-actions .nav-item:hover {
+            opacity: 1;
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff8a80;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* HEADER */
+        .top-bar {
+            height: 70px; background: white; display: flex; justify-content: space-between;
+            align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .header-logo-img { height: 45px; width: auto; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+
+        .status-pill {
+            background-color: #3c5e4f; color: white; padding: 8px 20px;
+            border-radius: 30px; font-size: 13px;
+        }
+        .datetime-widget {
+            display: flex; border-radius: 8px; overflow: hidden; font-size: 13px; font-weight: 500;
+        }
+        .date-part { background: #ebedf0; color: #333; padding: 8px 12px; }
+        .time-part { background: var(--sidebar-bg); color: white; padding: 8px 12px; }
+        .admin-profile img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ddd; object-fit: cover; }
+
+        /* --- DASHBOARD LAYOUT --- */
+        .dashboard-container {
+            padding: 25px; display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px; height: calc(100vh - 70px); overflow: hidden;
+        }
+
+        /* LEFT WIDGET COLUMN */
+        .widget-col {
+            display: flex; flex-direction: column; gap: 20px;
+            overflow-y: auto; height: 100%; padding-bottom: 20px;
+        }
+
+        /* RIGHT MAIN COLUMN */
+        .main-dash-col {
+            display: flex; flex-direction: column; gap: 20px;
+            overflow-y: auto; height: 100%; padding-bottom: 20px; padding-right: 5px;
+        }
+
+        /* CARDS GENERAL */
+        .card-base {
+            background: white; border-radius: 12px; padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        
+        .section-title {
+            font-size: 13px; font-weight: bold; text-transform: uppercase; color: #444;
+            margin-bottom: 15px; display: flex; justify-content: space-between;
+        }
+
+        /* --- TOP STATS ROW --- */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+        }
+        .stat-card {
+            color: white; border-radius: 12px; padding: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .stat-content { text-align: right; }
+        .stat-num { font-size: 36px; font-weight: bold; line-height: 1; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+        .stat-icon { font-size: 40px; opacity: 0.3; }
+
+        .bg-blue { background-color: var(--stat-blue); }
+        .bg-green { background-color: var(--stat-green); }
+        .bg-red { background-color: var(--stat-red); }
+
+        /* --- MIDDLE ROW (Courses + Calendar) --- */
+        .mid-row {
+            display: grid; grid-template-columns: 2fr 1fr; gap: 20px;
+        }
+
+        /* --- COURSE GRID --- */
+        .my-courses-header {
+            background: var(--sidebar-bg); color: white; padding: 10px 15px;
+            border-radius: 8px 8px 0 0; font-weight: bold; font-size: 14px;
+            text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;
+        }
+        .add-course-btn {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .add-course-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .courses-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;
+            background: white; border-radius: 0 0 8px 8px;
+        }
+        .course-card {
+            border: 1px solid #ddd; border-radius: 8px; padding: 12px;
+            display: flex; gap: 15px; align-items: flex-start;
+            background: white;
+        }
+
+        .course-thumb {
+            width: 70px; height: 70px;
+            background-color: #345B49;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .course-details {
+            flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%;
+        }
+        .course-name {
+            font-weight: bold; font-size: 13px; color: #222; margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .c-progress-track {
+            height: 6px; background-color: #eee; border-radius: 3px; width: 100%; margin-bottom: 4px;
+        }
+        .c-progress-fill {
+            height: 100%; background-color: #4caf50; border-radius: 3px;
+        }
+
+        .c-meta {
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .c-perc { font-size: 10px; color: #666; }
+
+        .c-btn {
+            background: white; border: 1px solid #ccc; color: #555;
+            padding: 3px 10px; border-radius: 4px; font-size: 10px;
+            font-weight: bold; width: fit-content; margin-top: 5px; cursor: pointer;
+        }
+        .c-btn:hover { border-color: #345B49; color: #345B49; }
+
+        /* Pagination Dots for Courses */
+        .course-dots-container {
+            display: flex; justify-content: center; gap: 6px; margin-top: 12px;
+        }
+        .course-dot {
+            height: 8px; border-radius: 4px; transition: 0.3s; cursor: pointer;
+        }
+        .course-dot.active { width: 24px; background-color: var(--sidebar-bg); }
+        .course-dot.inactive { width: 8px; background-color: #ccc; }
+
+        /* Calendar */
+        .calendar-card { background: white; border-radius: 8px; overflow: hidden; }
+        .cal-header {
+            background: var(--sidebar-bg); color: white; padding: 10px 15px;
+            font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .cal-nav { display: flex; gap: 8px; }
+        .cal-nav-btn {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 24px; height: 24px; border-radius: 4px; cursor: pointer;
+        }
+        .cal-body { padding: 15px; }
+        .cal-table { width: 100%; text-align: center; border-collapse: collapse; }
+        .cal-table th { font-size: 10px; color: #888; padding-bottom: 10px; }
+        .cal-table td {
+            padding: 8px; font-size: 12px; cursor: pointer; border-radius: 4px;
+        }
+        .cal-table td:hover { background: #f0f0f0; }
+        .today-mark { background: var(--sidebar-bg); color: white; font-weight: bold; }
+        .cal-legend { margin-top: 10px; font-size: 10px; color: #666; }
+        .dot-blue { color: #2196f3; }
+        .dot-green { color: #4caf50; }
+
+        /* --- ANALYTICS ROW --- */
+        .analytics-card {
+            background: white; border-radius: 12px; overflow: hidden;
+        }
+        .analytics-header {
+            background: var(--sidebar-bg); color: white; padding: 10px 15px;
+            font-weight: bold; font-size: 14px;
+        }
+        .analytics-body {
+            padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+        }
+
+        /* CSS Bar Chart */
+        .bar-chart-container {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            height: 150px; border-bottom: 1px solid #ddd; padding-bottom: 5px;
+        }
+        .bar-group { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 12%; }
+        .bar { width: 100%; background: var(--stat-green); border-radius: 4px 4px 0 0; opacity: 0.8; }
+        .bar-label { font-size: 10px; color: #666; }
+
+        /* CSS Line Chart (SVG) */
+        .line-chart-container { height: 150px; position: relative; }
+        .chart-svg { width: 100%; height: 100%; }
+        .chart-line { fill: none; stroke: var(--stat-green); stroke-width: 3; }
+        .chart-area { fill: rgba(76, 175, 80, 0.1); }
+        .chart-dot { fill: var(--sidebar-bg); stroke: white; stroke-width: 2; }
+        .chart-legend { display: flex; justify-content: space-between; margin-top: 10px; font-size: 10px; color: #888; }
+
+        /* --- LEFT WIDGET STYLES --- */
+        .top-10-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .student-pill {
+            background-color: var(--sidebar-bg); color: white; padding: 6px;
+            border-radius: 6px; display: flex; align-items: center; gap: 8px; font-size: 10px;
+        }
+        .student-pill img { width: 24px; height: 24px; border-radius: 50%; border: 1px solid white; object-fit: cover; }
+        .dots-indicator { text-align: center; margin-top: 10px; color: #ccc; font-size: 20px; }
+
+        .comment-item {
+            background: #fafafa; padding: 10px; font-size: 11px; font-style: italic; color: #555;
+            border-left: 3px solid var(--stat-green); margin-bottom: 10px; border-radius: 0 6px 6px 0;
+        }
+        .comment-red { border-left-color: var(--stat-red); }
+        .comment-author { font-style: normal; font-weight: bold; }
+        .cal-month-title { font-weight: bold; margin-bottom: 10px; }
+
+        /* Utility Classes for Dynamic Values */
+        .chart-section-title { font-weight: bold; font-size: 12px; margin-bottom: 15px; }
+        .progress-10 { width: 10%; }
+        .progress-30 { width: 30%; }
+        .progress-65 { width: 65%; }
+        .progress-90 { width: 90%; }
+        .bar-h-40 { height: 40%; }
+        .bar-h-50 { height: 50%; }
+        .bar-h-60 { height: 60%; }
+        .bar-h-65 { height: 65%; }
+        .bar-h-70 { height: 70%; }
+        .bar-h-80 { height: 80%; }
+        .bar-h-90 { height: 90%; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <!-- Dashboard (Active) -->
+        <a href="{% url 'dashboard:dashboard' %}" class="nav-item active">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+        </a>
+        <!-- Courses (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Courses</span>
+        </a>
+        <!-- Schedule (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Schedule</span>
+        </a>
+        <!-- Students -->
+        <a href="{% url 'students:students' %}" class="nav-item">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Students</span>
+        </a>
+        <!-- Lesson Plan (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Lesson Plan</span>
+        </a>
+        <!-- Forum (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-comments"></i>
+            <span>Forum</span>
+        </a>
+        <!-- Analytics (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Analytics</span>
+        </a>
+        <!-- Messages (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-envelope"></i>
+            <span>Messages</span>
+        </a>
+
+        <div class="bottom-actions">
+            <a href="{% url 'core:logout' %}" class="nav-item">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
         </div>
-        <!-- Dot Navigation -->
-        <div class="courses-dot-nav" id="coursesDotNav">
-            <span class="course-dot active" data-page="0"></span>
-            <span class="course-dot" data-page="1"></span>
-        </div>
-    </div>
-</div>
+    </nav>
 
+    <main class="main-content">
 
-<!-- STUDENT PERFORMANCE ANALYTICS -->
-<div class="analytics-section">
-    <div class="analytics-section-header">
-        <h3 class="section-title">Student Performance Analytics</h3>
-        <button type="button" class="add-analytics-btn" id="addAnalyticsBtn" title="Add Analytics" aria-label="Add Analytics">
-                <i class="fas fa-plus"></i>
-        </button>
-    </div>
-    <div class="analytics-grid">
-        <!-- GRADING CHART -->
-        <div class="analytics-card">
-            <div class="analytics-card-header">
-                <h4>Grading Distribution</h4>
-                <div class="analytics-filters">
-                    <select id="gradingCourseFilter" class="analytics-filter-select">
-                        <option value="all">All Courses</option>
-                    </select>
-                    <select id="gradingDateFilter" class="analytics-filter-select">
-                        <option value="week">Last Week</option>
-                        <option value="month">Last Month</option>
-                        <option value="all" selected>All Period</option>
-                    </select>
+        <header class="top-bar">
+            <div class="header-logo-container">
+                <img src="{% static 'images/silabusLMS_official_logo.png' %}" alt="SilabusLMS" class="header-logo-img">
+            </div>
+            <div class="header-right">
+                <div class="status-pill">Your next session starts in <strong>15 min</strong> | Room IIIC</div>
+                <div class="datetime-widget">
+                    <div class="date-part" id="navDate">08/Jan/2026</div>
+                    <div class="time-part" id="navTime">12:13</div>
+                </div>
+                <div class="admin-profile">
+                    <img src="{% static 'images/admin_user.jpg' %}" alt="Admin">
                 </div>
             </div>
-            <div class="chart-container">
-                <canvas id="gradingChart"></canvas>
-            </div>
-        </div>
+        </header>
 
-        <!-- PARTICIPATION CHART -->
-        <div class="analytics-card">
-            <div class="analytics-card-header">
-                <h4>Class Participation</h4>
-                <div class="analytics-filters">
-                    <select id="participationCourseFilter" class="analytics-filter-select">
-                        <option value="all">All Courses</option>
-                    </select>
-                    <select id="participationDateFilter" class="analytics-filter-select">
-                        <option value="week">Last Week</option>
-                        <option value="month">Last Month</option>
-                        <option value="all" selected>All Period</option>
-                    </select>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="participationChart"></canvas>
-            </div>
-        </div>
+        <div class="dashboard-container">
 
-        <!-- HOMEWORK CHART -->
-        <div class="analytics-card">
-            <div class="analytics-card-header">
-                <h4>Homework Completion</h4>
-                <div class="analytics-filters">
-                    <select id="homeworkCourseFilter" class="analytics-filter-select">
-                        <option value="all">All Courses</option>
-                    </select>
-                    <select id="homeworkDateFilter" class="analytics-filter-select">
-                        <option value="week">Last Week</option>
-                        <option value="month">Last Month</option>
-                        <option value="all" selected>All Period</option>
-                    </select>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="homeworkChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ADD COURSE MODAL -->
-<div class="modal-overlay" id="addCourseModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add New Course</h2>
-            <button type="button" class="modal-close" id="closeAddCourseModal" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Course Name <span class="required">*</span></label>
-                <input type="text" id="courseName" placeholder="e.g., Advanced Philosophy" class="form-input">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Start Date <span class="required">*</span></label>
-                    <div class="date-picker-wrapper">
-                        <input type="text" id="courseStartDate" placeholder="03-Mar-26" class="form-input date-input"
-                            readonly>
-                        <i class="fas fa-calendar-alt date-icon"></i>
-                        <div class="date-picker-dropdown" id="startDatePicker"></div>
+            <!-- LEFT WIDGET COLUMN -->
+            <div class="widget-col no-scrollbar">
+                <!-- Top 10 Students -->
+                <div class="card-base">
+                    <div class="section-title">TOP 10 STUDENTS <span>«</span></div>
+                    <div class="top-10-grid">
+                        <div class="student-pill"><img src="{% static 'images/face_2.jpg' %}" alt="Student Robert"> Robert S.</div>
+                        <div class="student-pill"><img src="{% static 'images/face_3.jpg' %}" alt="Student Zhatan"> Zhatan E.</div>
+                        <div class="student-pill"><img src="{% static 'images/face_4.jpg' %}" alt="Student Marcy"> Marcy S.</div>
+                        <div class="student-pill"><img src="{% static 'images/face_5.jpg' %}" alt="Student Denana"> Denana C.</div>
+                        <div class="student-pill"><img src="{% static 'images/face_6.jpg' %}" alt="Student Maathm"> Maathm H.</div>
+                        <div class="student-pill"><img src="{% static 'images/face_7.jpg' %}" alt="Student Maathm"> Maathm H.</div>
                     </div>
+                    <div class="dots-indicator">● ● ●</div>
                 </div>
-                <div class="form-group">
-                    <label>End Date <span class="required">*</span></label>
-                    <div class="date-picker-wrapper">
-                        <input type="text" id="courseEndDate" placeholder="12-Dec-26" class="form-input date-input"
-                            readonly>
-                        <i class="fas fa-calendar-alt date-icon"></i>
-                        <div class="date-picker-dropdown" id="endDatePicker"></div>
-                    </div>
+
+                <!-- Upcoming Events -->
+                {% include 'components/_upcoming_events_widget.html' %}
+
+                <!-- Latest Comments -->
+                <div class="card-base">
+                    <div class="section-title">LATEST COMMENTS</div>
+                    <div class="comment-item">"Great course content, really enjoyed the module..." <br><span class="comment-author">- Sarah K.</span></div>
+                    <div class="comment-item comment-red">"I'm having trouble accessing the quiz..." <br><span class="comment-author">- Michael R.</span></div>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Room <span class="required">*</span></label>
-                    <input type="text" id="courseRoom" placeholder="III A, High School" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Course Name <span class="required">*</span></label>
-                    <input type="text" id="courseSubject" placeholder="Social Studies" class="form-input">
-                </div>
-            </div>
+            <!-- RIGHT MAIN COLUMN -->
+            <div class="main-dash-col no-scrollbar">
 
-            <div class="form-group">
-                <label>Schedule <span class="required">*</span></label>
-                <div class="schedule-list" id="scheduleList">
-                    <div class="schedule-row">
-                        <div class="day-group">
-                            <span class="day-label">Day</span>
-                            <select class="form-select schedule-day">
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                            </select>
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-card bg-blue">
+                        <i class="fa-solid fa-envelope stat-icon"></i>
+                        <div class="stat-content">
+                            <div class="stat-num">5</div>
+                            <div class="stat-label">Unread Messages</div>
                         </div>
-                        <div class="time-group">
-                            <span class="time-label">Start</span>
-                            <div class="time-input-row">
-                                <input type="text" class="form-input time-input-small" placeholder="08:15">
-                                <div class="ampm-toggle">
-                                    <button type="button" class="ampm-btn active" data-value="AM">AM</button>
-                                    <button type="button" class="ampm-btn" data-value="PM">PM</button>
+                    </div>
+                    <div class="stat-card bg-green">
+                        <i class="fa-solid fa-comments stat-icon"></i>
+                        <div class="stat-content">
+                            <div class="stat-num">3</div>
+                            <div class="stat-label">Active Topics</div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-red">
+                        <i class="fa-solid fa-clock stat-icon"></i>
+                        <div class="stat-content">
+                            <div class="stat-num">2</div>
+                            <div class="stat-label">Missed Deadlines</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Row: Courses + Calendar -->
+                <div class="mid-row">
+                    <div>
+                        <div class="my-courses-header">
+                            MY COURSES
+                            <button type="button" class="add-course-btn" aria-label="Add Course"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <div class="courses-grid">
+                            <div class="course-card">
+                                <div class="course-thumb"><i class="fa-regular fa-image"></i></div>
+                                <div class="course-details">
+                                    <div class="course-name">Introduction to Data Science</div>
+                                    <div class="c-meta">
+                                        <div class="c-progress-track"><div class="c-progress-fill progress-65"></div></div>
+                                        <div class="c-perc">65% Complete</div>
+                                        <button type="button" class="c-btn">View Course</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="course-card">
+                                <div class="course-thumb"><i class="fa-regular fa-image"></i></div>
+                                <div class="course-details">
+                                    <div class="course-name">Advanced Project Management</div>
+                                    <div class="c-meta">
+                                        <div class="c-progress-track"><div class="c-progress-fill progress-30"></div></div>
+                                        <div class="c-perc">30% Complete</div>
+                                        <button type="button" class="c-btn">View Course</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="course-card">
+                                <div class="course-thumb"><i class="fa-regular fa-image"></i></div>
+                                <div class="course-details">
+                                    <div class="course-name">Digital Marketing Fundamentals</div>
+                                    <div class="c-meta">
+                                        <div class="c-progress-track"><div class="c-progress-fill progress-90"></div></div>
+                                        <div class="c-perc">90% Complete</div>
+                                        <button type="button" class="c-btn">View Course</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="course-card">
+                                <div class="course-thumb"><i class="fa-regular fa-image"></i></div>
+                                <div class="course-details">
+                                    <div class="course-name">UX Design Principles</div>
+                                    <div class="c-meta">
+                                        <div class="c-progress-track"><div class="c-progress-fill progress-10"></div></div>
+                                        <div class="c-perc">10% Complete</div>
+                                        <button type="button" class="c-btn">View Course</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="time-group">
-                            <span class="time-label">End</span>
-                            <div class="time-input-row">
-                                <input type="text" class="form-input time-input-small" placeholder="09:45">
-                                <div class="ampm-toggle">
-                                    <button type="button" class="ampm-btn active" data-value="AM">AM</button>
-                                    <button type="button" class="ampm-btn" data-value="PM">PM</button>
-                                </div>
+
+                        <div class="course-dots-container">
+                            <div class="course-dot active"></div>
+                            <div class="course-dot inactive"></div>
+                        </div>
+                    </div>
+
+                    <div class="calendar-card">
+                        <div class="cal-header">
+                            CALENDAR
+                            <div class="cal-nav">
+                                <button type="button" class="cal-nav-btn" aria-label="Previous Month"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button type="button" class="cal-nav-btn" aria-label="Next Month"><i class="fa-solid fa-chevron-right"></i></button>
                             </div>
                         </div>
-                        <button type="button" class="schedule-delete-btn" title="Remove" aria-label="Remove">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <button type="button" class="add-schedule-btn" id="addScheduleRow">
-                    <i class="fas fa-plus"></i> Add Class Time
-                </button>
-                <p class="form-hint">Add a different time for each day if needed.</p>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-cancel" id="cancelAddCourse">Cancel</button>
-            <button type="button" class="btn-save" id="saveNewCourse">Create Course</button>
-        </div>
-    </div>
-</div>
-
-<!-- ADD EVENT MODAL -->
-<div class="modal-overlay" id="addEventModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add New Event</h2>
-            <button type="button" class="modal-close" id="closeAddEventModal" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <!-- Event Name -->
-            <div class="form-group">
-                <label>Event Name <span class="required">*</span></label>
-                <input type="text" id="eventName" placeholder="e.g., Parent-Teacher Conference" class="form-input">
-            </div>
-
-            <!-- Date and Time -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Date <span class="required">*</span></label>
-                    <div class="date-picker-wrapper">
-                        <input type="text" id="eventDate" placeholder="27-Dec-25" class="form-input date-input"
-                            readonly>
-                        <i class="fas fa-calendar-alt date-icon"></i>
-                        <div class="date-picker-dropdown" id="eventDatePicker"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Start Time <span class="required">*</span></label>
-                    <div class="time-input-row">
-                        <input type="text" id="eventTime" class="form-input time-input-medium" placeholder="10:00">
-                        <div class="ampm-toggle">
-                            <button type="button" class="ampm-btn active" data-value="AM">AM</button>
-                            <button type="button" class="ampm-btn" data-value="PM">PM</button>
+                        <div class="cal-body">
+                            <div class="cal-month-title">January 2026</div>
+                            <table class="cal-table">
+                                <thead>
+                                    <tr><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th><th>S</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>29</td><td>30</td><td>31</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+                                    <tr><td>5</td><td>6</td><td class="today-mark">7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
+                                    <tr><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td></tr>
+                                    <tr><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="cal-legend">
+                                <span class="dot-blue">●</span> Project Submission <br>
+                                <span class="dot-green">●</span> Live Session
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Duration -->
-            <div class="form-group">
-                <label>Duration</label>
-                <div class="duration-row">
-                    <input type="number" id="eventDuration" class="form-input duration-input" placeholder="60" min="5"
-                        step="5">
-                    <span class="duration-label">minutes</span>
-                </div>
-            </div>
+                <!-- Analytics Section -->
+                <div class="analytics-card">
+                    <div class="analytics-header">Student Performance Analytics</div>
+                    <div class="analytics-body">
+                        <div>
+                            <div class="chart-section-title">Weekly Activity</div>
+                            <div class="bar-chart-container">
+                                <div class="bar-group"><div class="bar bar-h-40"></div><div class="bar-label">Sun</div></div>
+                                <div class="bar-group"><div class="bar bar-h-80"></div><div class="bar-label">Mon</div></div>
+                                <div class="bar-group"><div class="bar bar-h-50"></div><div class="bar-label">Tue</div></div>
+                                <div class="bar-group"><div class="bar bar-h-70"></div><div class="bar-label">Wed</div></div>
+                                <div class="bar-group"><div class="bar bar-h-65"></div><div class="bar-label">Thu</div></div>
+                                <div class="bar-group"><div class="bar bar-h-90"></div><div class="bar-label">Fri</div></div>
+                                <div class="bar-group"><div class="bar bar-h-60"></div><div class="bar-label">Sat</div></div>
+                            </div>
+                        </div>
 
-            <!-- Event Type -->
-            <div class="form-group">
-                <label>Event Type <span class="required">*</span></label>
-                <div class="event-type-options">
-                    <label class="checkbox-option">
-                        <input type="radio" name="eventType" value="meeting" checked>
-                        <span class="checkbox-label">Meeting</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="radio" name="eventType" value="oral_presentation">
-                        <span class="checkbox-label">Oral Presentation</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="radio" name="eventType" value="exam">
-                        <span class="checkbox-label">Exam / Test / Quiz</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="radio" name="eventType" value="homework">
-                        <span class="checkbox-label">Homework</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Course Assignment (conditional) -->
-            <div class="form-group course-assignment-group" id="courseAssignmentGroup" style="display: none;">
-                <label>Assign to Course(s)</label>
-                <div class="course-checkboxes" id="courseCheckboxes">
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignCourse[]" value="social_studies" id="ac_social_studies">
-                        <span class="checkbox-label">Social Studies</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignCourse[]" value="philosophy" id="ac_philosophy">
-                        <span class="checkbox-label">Philosophy</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignCourse[]" value="projects" id="ac_projects">
-                        <span class="checkbox-label">Projects</span>
-                    </label>
+                        <div>
+                            <div class="chart-section-title">Grade Trends</div>
+                            <div class="line-chart-container">
+                                <svg class="chart-svg" viewBox="0 0 300 150">
+                                    <path class="chart-area" d="M0,150 L0,120 L50,90 L100,70 L150,30 L200,60 L250,20 L300,150 Z" />
+                                    <polyline class="chart-line" points="0,120 50,90 100,70 150,30 200,60 250,20" />
+                                    <circle class="chart-dot" cx="50" cy="90" r="4" />
+                                    <circle class="chart-dot" cx="100" cy="70" r="4" />
+                                    <circle class="chart-dot" cx="150" cy="30" r="4" />
+                                    <circle class="chart-dot" cx="200" cy="60" r="4" />
+                                    <circle class="chart-dot" cx="250" cy="20" r="4" />
+                                </svg>
+                            </div>
+                            <div class="chart-legend">
+                                <span>Sem 1</span><span>Sem 2</span><span>Sem 3</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <label class="mt-16">Assign to Group(s)</label>
-                <div class="course-checkboxes" id="groupCheckboxes">
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="III A" id="ag_iii_a">
-                        <span class="checkbox-label">III A</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="III B" id="ag_iii_b">
-                        <span class="checkbox-label">III B</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="IV A" id="ag_iv_a">
-                        <span class="checkbox-label">IV A</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="IV B" id="ag_iv_b">
-                        <span class="checkbox-label">IV B</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="V" id="ag_v">
-                        <span class="checkbox-label">V</span>
-                    </label>
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="assignGroup[]" value="2nd Primary" id="ag_2nd_p">
-                        <span class="checkbox-label">2nd Primary</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Participants -->
-            <div class="form-group">
-                <label>Participants <span class="optional">(optional)</span></label>
-                <textarea id="eventParticipants" class="form-input form-textarea"
-                    placeholder="Enter names, one per line...&#10;John Smith&#10;Maria Garcia"></textarea>
-                <p class="form-hint">Names will be automatically formatted as a list.</p>
-            </div>
-
-            <!-- Notes -->
-            <div class="form-group">
-                <label>Notes <span class="optional">(optional)</span></label>
-                <textarea id="eventNotes" class="form-input form-textarea"
-                    placeholder="Add any additional details about this event..."></textarea>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-cancel" id="cancelAddEvent">Cancel</button>
-            <button type="button" class="btn-save" id="saveNewEvent">Create Event</button>
-        </div>
-    </div>
-</div>
+    </main>
 
-
-<!-- STUDENT SELECTION MODAL (for Analytics Filters) -->
-<div class="modal-overlay" id="studentSelectModal">
-    <div class="modal-content modal-small">
-        <div class="modal-header">
-            <h2>Select Student</h2>
-            <button type="button" class="modal-close" id="closeStudentSelectModal" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <!-- Error message when no course selected -->
-            <div class="student-select-error" id="studentSelectError" style="display: none;">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>Please select a specific course first before filtering by student.</p>
-            </div>
-            <!-- Student list -->
-            <div class="student-select-list" id="studentSelectList">
-                <!-- Students will be populated by JS -->
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-cancel" id="cancelStudentSelect">Cancel</button>
-        </div>
-    </div>
-</div>
-
-<script type="application/json" id="serverStudentsJSON">
-    {{ students_json|safe }}
-</script>
-<script type="application/json" id="serverEventsJSON">
-    {{ events_json|safe }}
-</script>
-<script type="application/json" id="serverCoursesJSON">
-    {{ courses_json|safe }}
-</script>
-
-<script>
-    const serverStudentsData = JSON.parse(document.getElementById('serverStudentsJSON').textContent);
-    const serverEventsData = JSON.parse(document.getElementById('serverEventsJSON').textContent);
-    const serverCoursesData = JSON.parse(document.getElementById('serverCoursesJSON').textContent);
-</script>
-{% endblock %}
+    <script>
+        // Update date/time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            document.getElementById('navDate').textContent = now.toLocaleDateString('en-GB', options).replace(/ /g, '/');
+            document.getElementById('navTime').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+    </script>
+</body>
+</html>

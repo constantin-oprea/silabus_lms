@@ -1,0 +1,331 @@
+/* ====================================
+   STUDENT DASHBOARD - Three Column Layout
+   ==================================== */
+
+:root {
+    /* Palette */
+    --sidebar-bg: #345B49;       
+    --student-card-bg: #345B49;  
+    --active-item-bg: #aeea00;   
+    --active-item-text: #1b3a2b; 
+    
+    --main-bg: #f4f6f8;
+    --card-bg: #ffffff;
+    --text-main: #333;
+    --border-color: #e0e0e0;
+    
+    /* Heatmap & Accents */
+    --accent-green: #2e7d32;
+    --accent-red: #d32f2f;
+    --heat-0: #ebedf0; 
+    --heat-1: #c6e48b; 
+    --heat-2: #7bc96f; 
+    --heat-3: #239a3b; 
+}
+
+/* --- UTILITY: HIDE SCROLLBARS BUT KEEP FUNCTIONALITY --- */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+/* --- DASHBOARD GRID (Structure Only) --- */
+.student-dashboard-container {
+    padding: 25px;
+    display: grid;
+    grid-template-columns: 320px 320px 1fr; 
+    gap: 25px;
+    height: calc(100vh - 70px);
+    overflow: hidden; /* Parent container DOES NOT scroll */
+    background-color: var(--main-bg);
+}
+
+.card-base {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+/* --- SCROLLABLE COLUMNS --- */
+
+/* 1. LEFT COLUMN */
+.widget-col {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    height: 100%;       /* Fill parent height */
+    overflow-y: auto;   /* Scroll independently */
+    padding-bottom: 20px; /* Space at bottom */
+}
+
+/* 2. MIDDLE COLUMN (Card container) */
+.list-col {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden; 
+    border: 1px solid rgba(0,0,0,0.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    height: 100%; /* Fill parent height */
+}
+
+/* 3. RIGHT COLUMN */
+.profile-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;       /* Fill parent height */
+    overflow-y: auto;   /* Scroll independently */
+    padding-bottom: 20px;
+}
+
+/* --- TOP 10 STUDENTS --- */
+.top-10-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.student-pill {
+    background-color: var(--student-card-bg); 
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.student-pill:hover { filter: brightness(1.1); }
+.student-pill img {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); object-fit: cover;
+}
+
+.dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 15px;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ddd;
+    border-radius: 50%;
+}
+.dot.active { background-color: var(--student-card-bg); }
+
+/* --- EVENTS --- */
+.event-card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+.event-date {
+    background-color: var(--active-item-bg);
+    color: var(--sidebar-bg);
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-weight: bold; line-height: 1;
+    font-size: 12px;
+}
+.event-info h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #333;
+}
+.event-info p {
+    font-size: 11px;
+    color: #666;
+    margin: 0;
+}
+
+/* --- COMMENTS --- */
+.comment-item {
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 12px 12px 12px 18px; 
+    margin-bottom: 12px;
+    position: relative;
+    font-size: 12px; color: #444; font-style: italic;
+}
+.comment-item::before {
+    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0;
+}
+.comment-green::before { background-color: var(--accent-green); }
+.comment-red::before { background-color: var(--accent-red); }
+
+/* --- STUDENT LIST (Middle Column) --- */
+.list-row {
+    padding: 12px 20px; display: flex; align-items: center; gap: 15px;
+    border-bottom: 1px solid #f9f9f9; cursor: pointer; transition: 0.2s;
+}
+.list-row:hover { background-color: #f4f6f8; }
+.list-row.active {
+    background-color: #e8f5e9; border-left: 4px solid var(--accent-green);
+}
+.list-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+
+/* --- PROFILE BANNER --- */
+.profile-banner {
+    background-color: var(--student-card-bg); 
+    color: white;
+    border-radius: 16px; padding: 25px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative;
+}
+.profile-main-img {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.3); object-fit: cover;
+}
+
+/* --- FRIENDS CIRCLE --- */
+.friends-container {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 5px;
+}
+.friend-stack { display: flex; }
+.friend-stack img {
+    width: 64px; 
+    height: 64px; 
+    border-radius: 50%;
+    border: 3px solid white; 
+    margin-left: -20px; 
+    object-fit: cover;
+}
+.friend-stack img:first-child { margin-left: 0; }
+
+/* --- STATS TRIAD --- */
+.triad-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 0.8fr 1.8fr; 
+    gap: 15px;
+}
+.stat-box {
+    background: white; padding: 15px;
+    border-radius: 12px; text-align: center;
+    border: 1px solid #eee;
+    position: relative;
+}
+
+/* --- HEATMAP --- */
+.heatmap-container {
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); 
+    gap: 3px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.heat-box {
+    aspect-ratio: 1;
+    background-color: var(--heat-0);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+.heat-box:hover {
+    transform: scale(1.3);
+    border: 1px solid #333;
+    z-index: 10;
+}
+
+.l-1 { background-color: var(--heat-1); }
+.l-2 { background-color: var(--heat-2); }
+.l-3 { background-color: var(--heat-3); }
+
+/* Heatmap Tooltip */
+.heat-box::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%; left: 50%;
+    transform: translateX(-50%);
+    background: #333; color: #fff;
+    padding: 4px 8px; font-size: 10px;
+    border-radius: 4px; white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s; margin-bottom: 5px;
+    z-index: 20;
+}
+.heat-box:hover::after { opacity: 1; }
+
+.heat-legend {
+    display: flex; gap: 8px; margin-top: 8px;
+    font-size: 9px; color: #666;
+    justify-content: flex-start;
+    width: 100%;
+}
+.legend-item { display: flex; align-items: center; gap: 3px; }
+.legend-box { width: 8px; height: 8px; border-radius: 2px; }
+
+.bimester-label {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 10px;
+    color: #888;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* --- DONUT CHART --- */
+.donut {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: conic-gradient(var(--active-item-bg) 0% 70%, #eee 70% 100%);
+    margin: 10px auto; display: flex; align-items: center; justify-content: center;
+}
+.donut-inner { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+/* --- GRADES --- */
+.grade-row {
+    display: flex; justify-content: space-between; padding: 10px 0;
+    border-bottom: 1px solid #eee; font-size: 13px;
+}
+.grade-val { font-weight: bold; color: var(--sidebar-bg); }
+
+/* --- PERIOD DROPDOWN --- */
+.period-dropdown {
+    background: rgba(255,255,255,0.2); 
+    color: white; 
+    border: 1px solid rgba(255,255,255,0.4); 
+    padding: 3px 8px; 
+    border-radius: 6px; 
+    font-size: 10px; 
+    cursor: pointer;
+    outline: none;
+    margin-top: 15px;
+}
+.period-dropdown option {
+    color: #333;
+}

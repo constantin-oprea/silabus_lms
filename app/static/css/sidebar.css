@@ -1,12 +1,13 @@
-/* I AM THE REAL FILE */
-/* ===== LEFT SIDEBAR NAVIGATION STYLES ===== */
+/* SPLIT SIDEBAR - ULTRA MODERN DESIGN */
 
 :root {
     --primary-green: #2E5D4B;
     --primary-green-light: #3d7565;
     --primary-green-dark: #1e3d32;
-    --sidebar-width: 200px;
-    --sidebar-collapsed-width: 60px;
+    --neon-green: #CCFF00;
+    --icon-bar-width: 45px;
+    --context-panel-width: 280px;
+    --sidebar-collapsed-width: 45px;
 }
 
 /* ===== GLOBAL SCROLLBAR HIDING ===== */
@@ -24,59 +25,63 @@ html, body {
     scrollbar-width: none;
 }
 
-/* Sidebar Container */
-.left-sidebar {
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
+/* ===== SPLIT SIDEBAR CONTAINER ===== */
+
+.split-sidebar-container {
+    display: flex;
+    position: relative;
+}
+
+/* ===== ULTRA-THIN ICON BAR (Always Visible) ===== */
+
+.icon-bar {
+    width: var(--icon-bar-width);
+    min-width: var(--icon-bar-width);
     background: var(--primary-green);
-    min-height: calc(100vh - 60px);
-    padding: 0;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 0;
+    gap: 8px;
     position: sticky;
-    top: 60px;
-    align-self: flex-start;
-    transition: width 0.3s ease, min-width 0.3s ease;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 100; /* Ensure sidebar is above main content for tooltips */
-    /* Hide scrollbars */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    top: 70px;
+    z-index: 150;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.left-sidebar::-webkit-scrollbar {
-    display: none;
-}
-
-/* Collapsed Sidebar State */
-.left-sidebar.collapsed {
-    width: var(--sidebar-collapsed-width);
-    min-width: var(--sidebar-collapsed-width);
-    overflow: visible; /* Allow tooltips to show outside sidebar */
-}
-
-.left-sidebar.collapsed .sidebar-text,
-.left-sidebar.collapsed .sidebar-section-title,
-.left-sidebar.collapsed .sidebar-students-section {
-    opacity: 0;
-    visibility: hidden;
-    width: 0;
-    overflow: hidden;
-}
-
-.left-sidebar.collapsed .sidebar-link {
+.icon-bar-item {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 12px 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 20px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.left-sidebar.collapsed .sidebar-link i {
-    margin: 0;
+.icon-bar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: scale(1.1);
 }
 
-/* Tooltip on hover ONLY when collapsed */
-.left-sidebar.collapsed .sidebar-link::after {
+.icon-bar-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    box-shadow: 0 0 0 2px var(--neon-green);
+}
+
+/* Icon Bar Tooltip */
+.icon-bar-item::after {
     content: attr(data-tooltip);
     position: absolute;
-    left: calc(100% + 10px);
+    left: calc(100% + 12px);
     top: 50%;
     transform: translateY(-50%);
     background: #333;
@@ -90,14 +95,13 @@ html, body {
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
     z-index: 9999;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
 }
 
-/* Tooltip arrow */
-.left-sidebar.collapsed .sidebar-link::before {
+.icon-bar-item::before {
     content: '';
     position: absolute;
-    left: calc(100% + 4px);
+    left: calc(100% + 6px);
     top: 50%;
     transform: translateY(-50%);
     border: 6px solid transparent;
@@ -106,20 +110,48 @@ html, body {
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
     z-index: 9999;
+    pointer-events: none;
 }
 
-/* Show tooltip on hover when collapsed */
-.left-sidebar.collapsed .sidebar-link:hover::after,
-.left-sidebar.collapsed .sidebar-link:hover::before {
+.icon-bar-item:hover::after,
+.icon-bar-item:hover::before {
     opacity: 1;
     visibility: visible;
 }
 
-.sidebar-nav {
-    height: 100%;
-    padding: 15px 0;
-    display: flex;
-    flex-direction: column;
+/* ===== CONTEXT PANEL (Slides Out) ===== */
+
+.context-panel {
+    width: 0;
+    min-width: 0;
+    background: #ffffff;
+    min-height: calc(100vh - 70px);
+    position: sticky;
+    top: 70px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0);
+    z-index: 140;
+}
+
+.context-panel.active {
+    width: var(--context-panel-width);
+    min-width: var(--context-panel-width);
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.context-panel-inner {
+    width: var(--context-panel-width);
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 70px);
+    /* Hide scrollbars */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.context-panel-inner::-webkit-scrollbar {
+    display: none;
 }
 
 /* ===== HEADER LOGO (In Top Navbar) ===== */
@@ -236,15 +268,6 @@ html, body {
     background: #f8f9fa;
     padding: 8px 12px;
     border-radius: 8px;
-}
-
-/* ===== NARROWER SIDEBAR ===== */
-.left-sidebar {
-    width: 200px !important; /* Reduced from 260px */
-}
-
-.app-layout {
-    grid-template-columns: 200px 1fr 280px !important; /* Reduced sidebar and right panel */
 }
 
 /* ===== COMPACT KPI BANNER ===== */
@@ -480,91 +503,256 @@ html, body {
     box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3);
 }
 
-/* ===== HAMBURGER BUTTON ===== */
+/* ===== HAMBURGER/WAFFLE BUTTON ===== */
 
 .hamburger-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
+    background: #f3f4f6;
     border: none;
-    font-size: 20px;
-    color: #333;
+    font-size: 24px;
+    color: #374151;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background 0.2s ease;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    width: 44px;
+    height: 44px;
 }
 
 .hamburger-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: #e5e7eb;
+    color: #111827;
+    transform: scale(1.05);
 }
 
-/* ===== NAVIGATION MENU ===== */
-
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 0 10px;
+.hamburger-btn:active {
+    transform: scale(0.95);
 }
 
-.sidebar-link {
+/* ===== CONTEXT PANEL SECTIONS ===== */
+
+.context-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.context-section:last-child {
+    border-bottom: none;
+}
+
+.context-section-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    color: rgba(255, 255, 255, 0.85);
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.context-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.context-close-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    color: #6b7280;
+    cursor: pointer;
     transition: all 0.2s ease;
-    position: relative;
-    white-space: nowrap;
 }
 
-.sidebar-link i {
-    font-size: 18px;
-    width: 22px;
-    min-width: 22px;
-    text-align: center;
+.context-close-btn:hover {
+    background: #e5e7eb;
+    color: #1f2937;
 }
 
-.sidebar-text {
-    transition: opacity 0.2s ease;
+/* ===== STUDENTS LIST (Context Panel) ===== */
+
+.students-list-context {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+.student-card-context {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
 }
 
-.sidebar-link.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+.student-card-context:hover {
+    background: #f9fafb;
+}
+
+.student-avatar-context {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.student-info-context {
+    flex: 1;
+    min-width: 0;
+}
+
+.student-name-context {
+    font-size: 13px;
     font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.sidebar-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 70%;
-    background: #CCFF00;
-    border-radius: 0 4px 4px 0;
+.student-detail-context {
+    font-size: 11px;
+    color: #6b7280;
 }
 
-/* ===== SIDEBAR TOP 10 STUDENTS SECTION ===== */
+/* ===== EVENTS LIST (Context Panel) ===== */
 
-.sidebar-students-section {
-    margin-top: auto;
-    padding: 15px 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    transition: opacity 0.2s ease;
+.events-list-context {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.event-card-context {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+.event-card-context:hover {
+    background: #f3f4f6;
+    transform: translateX(2px);
+}
+
+.event-date-badge {
+    background: var(--primary-green);
+    color: white;
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.event-day {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.event-month {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+.event-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+}
+
+.event-meta {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ===== COMMENTS LIST (Context Panel) ===== */
+
+.comments-list-context {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comment-card-context {
+    background: #f9fafb;
+    border-left: 3px solid #10b981;
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.comment-card-context.positive {
+    border-left-color: #10b981;
+}
+
+.comment-card-context.concern {
+    border-left-color: #ef4444;
+}
+
+.comment-card-context:hover {
+    background: #f3f4f6;
+}
+
+.comment-text {
+    font-size: 12px;
+    color: #374151;
+    font-style: italic;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #6b7280;
+}
+
+.comment-author,
+.comment-subject {
+    display: inline-block;
+}
+
+.comment-author::after {
+    content: '•';
+    margin-left: 8px;
+}
+
+/* ===== LEFT SIDEBAR WRAPPER (for compatibility) ===== */
+
+.left-sidebar {
+    /* Use split-sidebar-container instead */
+    display: contents;
 }
 
 .sidebar-section-title {

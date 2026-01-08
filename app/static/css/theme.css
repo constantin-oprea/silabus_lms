@@ -1,0 +1,20 @@
+:root {
+    /* Main Palette - Option B (Teal & Slate) */
+    --sidebar-bg: #096e77;       /* Teal */
+    --sidebar-dark: #064b52;     /* Darker Teal for Gradient */
+    --bg-color: #f4f7fa;
+    --card-bg: #ffffff;
+    --text-main: #333;
+    --text-muted: #888;
+    --border-color: #e0e0e0;
+    
+    /* Stats Colors */
+    --stat-blue: #5b7d7e;        /* Slate Green/Blue */
+    --stat-green: #096e77;       /* Teal */
+    --stat-red: #d16b6b;         /* Muted Red */
+    
+    /* Accent */
+    --accent-color: #a5b7d7;     /* Light Blue-Grey */
+    --accent-glow: rgba(165, 183, 215, 0.2);
+    --text-active: #ffffff;
+}

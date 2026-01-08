@@ -17,7 +17,7 @@ def calendar_context(request):
     """
     if request.user.is_authenticated:
         # Get all events for the calendar
-        events = Event.objects.all().order_by("event_date")
+        events = Event.objects.all().order_by("start_time")
         events_data = [event.to_dict() for event in events]
 
         # Get top 10 students (reuse existing logic)

@@ -1,47 +1,149 @@
-<!-- LEFT SIDEBAR - Navigation + Top 10 Students -->
 {% load static %}
 
-<div class="sidebar-nav d-flex flex-column h-100">
-    <!-- Navigation Menu -->
-    <nav class="sidebar-menu">
-        <a href="{% url 'dashboard:dashboard' %}" data-tooltip="Dashboard"
-            class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+<!-- SPLIT SIDEBAR: Icon Bar + Context Panel -->
+<div class="split-sidebar-container">
+    <!-- ULTRA-THIN ICON BAR (Always Visible) -->
+    <div class="icon-bar" id="iconBar">
+        <a href="{% url 'dashboard:dashboard' %}" 
+           class="icon-bar-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+           data-tooltip="Dashboard"
+           data-section="dashboard">
             <i class="bi bi-grid"></i>
-            <span class="sidebar-text">Dashboard</span>
         </a>
-        <a href="{% url 'dashboard:schedule' %}" data-tooltip="Schedule"
-            class="sidebar-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
+        <a href="{% url 'dashboard:my_courses' %}" 
+           class="icon-bar-item {% if request.resolver_match.url_name == 'my_courses' %}active{% endif %}"
+           data-tooltip="My Courses"
+           data-section="courses">
+            <i class="bi bi-book"></i>
+        </a>
+        <a href="{% url 'dashboard:schedule' %}" 
+           class="icon-bar-item {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}"
+           data-tooltip="Schedule"
+           data-section="schedule">
             <i class="bi bi-calendar"></i>
-            <span class="sidebar-text">Schedule</span>
         </a>
-        <a href="{% url 'lessons:lesson_plans' %}" data-tooltip="Lesson Plans"
-            class="sidebar-link {% if request.resolver_match.url_name == 'lesson_plans' %}active{% endif %}">
+        <a href="{% url 'lessons:lesson_plans' %}" 
+           class="icon-bar-item {% if request.resolver_match.url_name == 'lesson_plans' %}active{% endif %}"
+           data-tooltip="Lesson Plans"
+           data-section="lessons">
             <i class="bi bi-file-text"></i>
-            <span class="sidebar-text">Lesson Plans</span>
         </a>
-        <a href="{% url 'students:students' %}" data-tooltip="Students"
-            class="sidebar-link {% if request.resolver_match.url_name == 'students' %}active{% endif %}">
+        <a href="#" 
+           class="icon-bar-item icon-bar-toggle"
+           data-tooltip="Students & Events"
+           data-section="students"
+           id="studentsToggle">
             <i class="bi bi-people"></i>
-            <span class="sidebar-text">Students</span>
         </a>
-        <a href="{% url 'students:grades' %}" data-tooltip="Grades"
-            class="sidebar-link {% if request.resolver_match.url_name == 'grades' %}active{% endif %}">
+        <a href="{% url 'students:grades' %}" 
+           class="icon-bar-item {% if request.resolver_match.url_name == 'grades' %}active{% endif %}"
+           data-tooltip="Grades"
+           data-section="grades">
             <i class="bi bi-award"></i>
-            <span class="sidebar-text">Grades</span>
         </a>
-        <a href="#" data-tooltip="Forum" class="sidebar-link">
+        <a href="#" 
+           class="icon-bar-item"
+           data-tooltip="Forum"
+           data-section="forum">
             <i class="bi bi-chat-left-text"></i>
-            <span class="sidebar-text">Forum</span>
         </a>
-        <a href="#" data-tooltip="Analytics" class="sidebar-link">
+        <a href="#" 
+           class="icon-bar-item"
+           data-tooltip="Analytics"
+           data-section="analytics">
             <i class="bi bi-bar-chart"></i>
-            <span class="sidebar-text">Analytics</span>
         </a>
-        <a href="#" data-tooltip="Messages" class="sidebar-link">
+        <a href="#" 
+           class="icon-bar-item"
+           data-tooltip="Messages"
+           data-section="messages">
             <i class="bi bi-envelope"></i>
-            <span class="sidebar-text">Messages</span>
         </a>
-    </nav>
+    </div>
 
+    <!-- CONTEXT PANEL (Slides Out) -->
+    <div class="context-panel" id="contextPanel">
+        <div class="context-panel-inner">
+            <!-- TOP 10 STUDENTS SECTION -->
+            <div class="context-section" id="contextStudents">
+                <div class="context-section-header">
+                    <h4 class="context-section-title">TOP 10 STUDENTS</h4>
+                    <button class="context-close-btn" id="closeContextPanel" aria-label="Close panel">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="students-list-context" id="topStudentsContext">
+                    <!-- Students will be populated by JavaScript -->
+                </div>
+            </div>
 
+            <!-- UPCOMING EVENTS SECTION -->
+            <div class="context-section">
+                <div class="context-section-header">
+                    <h4 class="context-section-title">Upcoming Events</h4>
+                </div>
+                <div class="events-list-context" id="upcomingEventsContext">
+                    <!-- Sample events - will be replaced with real data -->
+                    <div class="event-card-context">
+                        <div class="event-date-badge">
+                            <span class="event-day">12</span>
+                            <span class="event-month">JAN</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">Faculty Meeting</h5>
+                            <p class="event-meta">09:00 AM • Meeting Room 1</p>
+                        </div>
+                    </div>
+                    <div class="event-card-context">
+                        <div class="event-date-badge">
+                            <span class="event-day">15</span>
+                            <span class="event-month">JAN</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">Science Fair Prep</h5>
+                            <p class="event-meta">02:00 PM • Lab 3</p>
+                        </div>
+                    </div>
+                    <div class="event-card-context">
+                        <div class="event-date-badge">
+                            <span class="event-day">20</span>
+                            <span class="event-month">JAN</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">Parent Teacher Conference</h5>
+                            <p class="event-meta">10:00 AM • Main Hall</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LATEST COMMENTS SECTION -->
+            <div class="context-section">
+                <div class="context-section-header">
+                    <h4 class="context-section-title">LATEST COMMENTS</h4>
+                </div>
+                <div class="comments-list-context">
+                    <!-- Sample comments - will be replaced with real data -->
+                    <div class="comment-card-context positive">
+                        <div class="comment-content">
+                            <p class="comment-text">"Sofia's recent leadership in the group history project was outstanding. She ensured every member participated."</p>
+                            <div class="comment-meta">
+                                <span class="comment-author">Room III A</span>
+                                <span class="comment-subject">History</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-card-context concern">
+                        <div class="comment-content">
+                            <p class="comment-text">"Leo needs to improve his focus during independent work times and resist distractions."</p>
+                            <div class="comment-meta">
+                                <span class="comment-author">Room IV B</span>
+                                <span class="comment-subject">Mathematics</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

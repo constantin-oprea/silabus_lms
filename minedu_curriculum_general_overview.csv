@@ -1,0 +1,27 @@
+Framework,Category,Parent_ID,Level_Name,Description,Code
+Minedu,Personal Social,NULL,Competencia,"Construye su identidad",MIN-C1
+Minedu,Personal Social,MIN-C1,Capacidad,"Se valora a sí mismo",MIN-C1-CAP1
+Minedu,Personal Social,MIN-C1,Capacidad,"Autorregula sus emociones",MIN-C1-CAP2
+Minedu,Personal Social,MIN-C1,Capacidad,"Reflexiona y argumenta éticamente",MIN-C1-CAP3
+Minedu,Personal Social,MIN-C1,Capacidad,"Vive su sexualidad de manera integral y responsable",MIN-C1-CAP4
+Minedu,Educación Física,NULL,Competencia,"Se desenvuelve de manera autónoma a través de su motricidad",MIN-C2
+Minedu,Educación Física,MIN-C2,Capacidad,"Comprende su cuerpo",MIN-C2-CAP1
+Minedu,Educación Física,MIN-C2,Capacidad,"Se expresa corporalmente",MIN-C2-CAP2
+Minedu,Educación Física,NULL,Competencia,"Asume una vida saludable",MIN-C3
+Minedu,Educación Física,MIN-C3,Capacidad,"Comprende las relaciones entre la actividad física, alimentación, postura e higiene y la salud",MIN-C3-CAP1
+Minedu,Educación Física,MIN-C3,Capacidad,"Incorpora prácticas que mejoran su calidad de vida",MIN-C3-CAP2
+Minedu,Comunicación,NULL,Competencia,"Se comunica oralmente en su lengua materna",MIN-C7
+Minedu,Comunicación,MIN-C7,Capacidad,"Obtiene información de textos orales",MIN-C7-CAP1
+Minedu,Comunicación,MIN-C7,Capacidad,"Infiere e interpreta información de textos orales",MIN-C7-CAP2
+Minedu,Comunicación,MIN-C7,Capacidad,"Adecua, organiza y desarrolla las ideas de forma coherente y cohesionada",MIN-C7-CAP3
+Minedu,Ciencia y Tecnología,NULL,Competencia,"Indaga mediante métodos científicos para construir conocimientos",MIN-C20
+Minedu,Ciencia y Tecnología,MIN-C20,Capacidad,"Problematiza situaciones",MIN-C20-CAP1
+Minedu,Ciencia y Tecnología,MIN-C20,Capacidad,"Diseña estrategias para hacer indagación",MIN-C20-CAP2
+Minedu,Ciencia y Tecnología,MIN-C20,Capacidad,"Genera y registra datos e información",MIN-C20-CAP3
+Minedu,Matemática,NULL,Competencia,"Resuelve problemas de cantidad",MIN-C23
+Minedu,Matemática,MIN-C23,Capacidad,"Traduce cantidades a expresiones numéricas",MIN-C23-CAP1
+Minedu,Matemática,MIN-C23,Capacidad,"Comunica su comprensión sobre los números y las operaciones",MIN-C23-CAP2
+Minedu,Transversal,NULL,Competencia,"Se desenvuelve en entornos virtuales generados por las TIC",MIN-C28
+Minedu,Transversal,MIN-C28,Capacidad,"Personaliza entornos virtuales",MIN-C28-CAP1
+Minedu,Transversal,NULL,Competencia,"Gestiona su aprendizaje de manera autónoma",MIN-C29
+Minedu,Transversal,MIN-C29,Capacidad,"Define metas de aprendizaje",MIN-C29-CAP1

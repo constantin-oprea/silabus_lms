@@ -1,155 +1,852 @@
-{% extends "base.html" %}
-
 {% load static %}
-
-{% block body_class %}students-page{% endblock %}
-
-{% block head_extra %}
-<link rel="stylesheet" href="{% static 'css/students-new.css' %}?v=3">
-<!-- Chart.js for charts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{% endblock %}
-
-{% block content %}
-<!-- STUDENTS PAGE - COMPACT SPLIT VIEW -->
-<div class="students-layout-wrapper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilabusLMS | People Dashboard</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon_silabusLMS_official.png' %}" />
     
-    <!-- LEFT PANEL: Student Directory -->
-    <div class="directory-panel">
-        <div class="directory-header">
-            <h2>Student List</h2>
-            <div class="filter-controls">
-                <div class="filter-group">
-                    <label>Course:</label>
-                    <select id="courseFilter">
-                        <option value="all">All Courses</option>
-                        {% for group in groups %}
-                            <option value="{{ group.name }}">{{ group.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <!-- Sort is visual only for now or client-side -->
-                <div class="filter-group">
-                    <label>Sort By:</label>
-                    <select id="sortFilter">
-                        <option value="name_asc">Name A-Z</option>
-                        <option value="name_desc">Name Z-A</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Student Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'css/student-dashboard.css' %}?v=9">
 
-        <div class="student-list-virtual-container" id="virtualScrollContainer">
-            <div class="virtual-scroll-spacer" id="virtualSpacer"></div>
-            <div class="student-list-content" id="studentListContent">
-                <!-- Javascript will inject items here -->
-            </div>
-        </div>
-    </div>
+    <!-- Shared Theme & Components -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/upcoming-events.css' %}">
+    
+    <style>
+        /* Base Reset & Body */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
 
-    <!-- RIGHT PANEL: Student Profile Details -->
-    <div class="profile-panel" id="profilePanel">
-        <!-- HEADER CARD -->
-        <div class="profile-header-card">
-            <div class="header-content">
-                <div class="header-avatar-section">
-                    <img src="" id="pAvatar" alt="Student" class="profile-avatar-lg">
-                </div>
-                <div class="header-info-section">
-                    <div class="header-top-row">
-                        <h1 id="pName">Student Name</h1>
-                        <button class="btn-edit-profile"><i class="fas fa-pencil-alt"></i> Edit Profile</button>
-                    </div>
-                    <div class="header-sub-row">
-                        <span class="header-course" id="pCourse">Course: --</span>
-                    </div>
-                    <div class="header-grade-row">
-                        <span class="grade-label">Average Grade:</span>
-                        <span class="grade-value" id="pAvg">--</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        body {
+            background-color: var(--main-bg);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        <!-- CONTENT GRID -->
-        <div class="profile-content-grid">
+        /* --- SIDEBAR - Premium Glassmorphism --- */
+        .sidebar {
+            width: 80px; 
+            background: linear-gradient(180deg, #345B49 0%, #264235 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            color: white;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        }
+
+        .sidebar .nav-item {
+            width: 60px;
+            padding: 14px 8px;
+            margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.9);
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar .nav-item span {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Inactive State */
+        .sidebar .nav-item.inactive {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .sidebar .nav-item.inactive:hover {
+            opacity: 1;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Hover State */
+        .sidebar .nav-item:not(.inactive):hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Active State - Glassmorphism */
+        .sidebar .nav-item.active {
+            background: rgba(174, 234, 0, 0.15);
+            color: #aeea00;
+            backdrop-filter: blur(10px);
+            border-left: 3px solid #aeea00;
+            box-shadow: 0 0 20px rgba(174, 234, 0, 0.2),
+                        inset 0 0 30px rgba(174, 234, 0, 0.05);
+        }
+
+        .sidebar .nav-item.active i {
+            filter: drop-shadow(0 0 4px rgba(174, 234, 0, 0.5));
+        }
+
+        .bottom-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .bottom-actions .nav-item {
+            opacity: 0.7;
+        }
+
+        .bottom-actions .nav-item:hover {
+            opacity: 1;
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff8a80;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        .top-bar {
+            height: 70px; 
+            background: white;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .header-logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo-img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-pill {
+            background-color: #3c5e4f; 
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-pill strong { font-weight: 700; }
+
+        .datetime-widget {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .date-part {
+            background-color: #ebedf0; 
+            color: #333;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .time-part {
+            background-color: #1b3a2b; 
+            color: white;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        /* --- ENHANCED STYLES --- */
+        
+        /* Bimester Dropdown - Larger */
+        .period-dropdown {
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        /* Friends & Hobbies Split */
+        .friends-hobbies-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .friends-section, .hobbies-section {
+            flex: 1;
+        }
+        .section-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .hobby-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hobby-pill {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #2a4a3c 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Forum Ticker */
+        .forum-ticker-container {
+            overflow: hidden;
+            height: 180px;
+            position: relative;
+        }
+        .forum-ticker {
+            animation: tickerScroll 30s linear infinite;
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        .forum-ticker:hover {
+            animation-play-state: paused;
+        }
+
+        /* Teacher Comments Enhanced */
+        .comment-block {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--accent-green);
+            position: relative;
+        }
+        .comment-header {
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .comment-text {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .comment-read-more {
+            font-size: 11px;
+            color: var(--sidebar-bg);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        .comment-read-more:hover {
+            text-decoration: underline;
+        }
+        .comments-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        /* Carousel Dots Interactive */
+        .dots-container .dot {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dots-container .dot:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <!-- Dashboard -->
+        <a href="{% url 'dashboard:dashboard' %}" class="nav-item">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+        </a>
+        <!-- Courses (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Courses</span>
+        </a>
+        <!-- Schedule (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Schedule</span>
+        </a>
+        <!-- Students (Active on this page) -->
+        <a href="{% url 'students:students' %}" class="nav-item active">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Students</span>
+        </a>
+        <!-- Lesson Plan (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Lesson Plan</span>
+        </a>
+        <!-- Forum (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-comments"></i>
+            <span>Forum</span>
+        </a>
+        <!-- Analytics (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Analytics</span>
+        </a>
+        <!-- Messages (Inactive) -->
+        <a href="#" class="nav-item inactive" onclick="return false;">
+            <i class="fa-regular fa-envelope"></i>
+            <span>Messages</span>
+        </a>
+
+        <div class="bottom-actions">
+            <a href="{% url 'core:logout' %}" class="nav-item">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="top-bar">
+            <div class="header-logo-container">
+                <img src="{% static 'images/silabusLMS_official_logo.png' %}" alt="SilabusLMS" class="header-logo-img">
+            </div>
             
-            <!-- LEFT COLUMN: Bio & Activity -->
-            <div class="profile-col-left">
-                <!-- BIO & INTERESTS -->
-                <div class="profile-card bio-card">
-                    <div class="card-header-row">
-                        <h3>Bio & Interests</h3>
-                    </div>
-                    <div class="bio-grid">
-                        <div class="bio-item">
-                            <label>Date of Birth</label>
-                            <div id="pDob">--</div>
-                        </div>
-                        <div class="bio-item">
-                            <label>Tutor</label>
-                            <div id="pTutor">--</div>
-                        </div>
-                    </div>
-                    <div class="bio-item interests-section">
-                        <label>I Like To...</label>
-                        <div class="tags-container" id="pInterests">
-                            <!-- Tags injected via JS -->
-                        </div>
+            <div class="header-right">
+                <div class="status-pill">
+                    Your next session starts in <strong>15 min</strong> | Room IIIC, Philosophy
+                </div>
+
+                <div class="datetime-widget">
+                    <div class="date-part" id="navDate">08/Jan/2026</div>
+                    <div class="time-part" id="navTime">07:15</div>
+                </div>
+
+                <div class="admin-profile">
+                    <img src="{% static 'images/admin_user.jpg' %}" alt="Admin">
+                </div>
+            </div>
+        </header>
+
+        <div class="student-dashboard-container">
+            
+            <!-- LEFT COLUMN: Widgets -->
+            <div class="widget-col no-scrollbar">
+                <!-- Top 10 Students Carousel -->
+                <div class="card-base">
+                    <div class="section-title">Top 10 Students</div>
+                    <div class="top-10-grid" id="studentsCarousel">
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
 
-                <!-- RECENT ACTIVITY -->
-                <div class="profile-card activity-card">
-                    <h3>Recent Activity</h3>
-                    <div class="activity-list" id="pActivity">
-                       <!-- JS Injected -->
+                <!-- Upcoming Events -->
+                <!-- Upcoming Events -->
+                {% include 'components/_upcoming_events_widget.html' %}
+
+                <!-- Forum Ticker -->
+                <div class="card-base">
+                    <div class="section-title">Live Forum Activity</div>
+                    <div class="forum-ticker-container">
+                        <div class="forum-ticker" id="forumTicker">
+                            <!-- Rendered by JS - duplicated for seamless loop -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Analytics & Notes -->
-            <div class="profile-col-right">
-                
-                <!-- ACADEMIC OVERVIEW -->
-                <div class="profile-card chart-card">
-                    <div class="card-header-row">
-                        <h3>Academic Overview</h3>
-                        <div class="attendance-badge">
-                            <span class="att-label">Attendance</span>
-                            <span class="att-value" id="pAttendanceRate">--%</span>
+            <!-- MIDDLE COLUMN: Student List -->
+            <div class="list-col">
+                <div style="padding:20px; border-bottom:1px solid #f0f0f0;">
+                    <h3 style="margin-bottom:10px;">Student List</h3>
+                    <select id="courseFilter" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:13px;" onchange="filterStudentsByCourse(this.value)">
+                        <option value="all">All Courses</option>
+                        <option value="Social Studies IVC">Social Studies IVC</option>
+                        <option value="Social Studies IIIB">Social Studies IIIB</option>
+                        <option value="Philosophy VB">Philosophy VB</option>
+                        <option value="AP Psychology">AP Psychology</option>
+                    </select>
+                </div>
+                <div id="studentListContainer" style="overflow-y:auto; flex:1;" class="no-scrollbar">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Profile Details -->
+            <div class="profile-col no-scrollbar">
+                <div class="profile-banner">
+                    <div>
+                        <h2 style="font-size:20px; margin-bottom:5px;" id="selectedStudentName">Maria Rodriguez</h2>
+                        <p style="font-size:13px; opacity:0.9;" id="selectedStudentInfo">Philosophy VB | Grade: 98.5 (A)</p>
+                        
+                        <!-- Period Context Dropdown - Larger Font -->
+                        <select class="period-dropdown">
+                            <option selected>1st Bimester (Current)</option>
+                            <option>2nd Bimester</option>
+                            <option>3rd Bimester</option>
+                            <option>4th Bimester</option>
+                            <option>-- View All Year --</option>
+                        </select>
+                    </div>
+
+                    <img src="{% static 'images/face_1.jpg' %}" class="profile-main-img" id="selectedStudentImg">
+                </div>
+
+                <!-- Friends & Hobbies Split -->
+                <div class="card-base" style="padding:15px;">
+                    <div class="friends-hobbies-container">
+                        <div class="friends-section">
+                            <div class="section-label">Friends Circle</div>
+                            <div class="friend-stack">
+                                <img src="{% static 'images/face_2.jpg' %}">
+                                <img src="{% static 'images/face_3.jpg' %}">
+                                <img src="{% static 'images/face_4.jpg' %}">
+                                <img src="{% static 'images/face_5.jpg' %}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="chart-container-wrapper">
-                        <canvas id="attendanceChart"></canvas>
-                    </div>
-                    <div class="recent-grades-section">
-                        <h4>Recent Grades</h4>
-                        <div class="grades-row" id="pRecentGrades">
-                            <!-- JS Injected -->
+                        <div class="hobbies-section">
+                            <div class="section-label">Hobbies</div>
+                            <div class="hobby-pills">
+                                <span class="hobby-pill"><i class="fa-solid fa-chess"></i> Chess</span>
+                                <span class="hobby-pill"><i class="fa-solid fa-futbol"></i> Soccer</span>
+                                <span class="hobby-pill"><i class="fa-solid fa-book"></i> Reading</span>
+                                <span class="hobby-pill"><i class="fa-solid fa-music"></i> Music</span>
+                                <span class="hobby-pill"><i class="fa-solid fa-palette"></i> Art</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TEACHER'S NOTES -->
-                <div class="profile-card notes-card">
-                    <h3>Teacher's Notes</h3>
-                    <div class="notes-input-wrapper">
-                         <textarea id="pTeacherNotes" placeholder="Add a note about this student..."></textarea>
+                <!-- Stats Triad -->
+                <div class="triad-grid">
+                    <div class="stat-box">
+                        <div style="font-size:11px; font-weight:bold; color:#888;">HOMEWORK</div>
+                        <div class="donut"><div class="donut-inner"><span style="font-weight:bold; font-size:16px;">3</span><span style="font-size:9px;">Left</span></div></div>
+                        <div style="font-size:10px; color:var(--accent-green);">● Pending</div>
                     </div>
-                    <div class="notes-footer">
-                        <span id="notesStatus">Auto-saved</span>
+
+                    <div class="stat-box">
+                        <div style="font-size:11px; font-weight:bold; color:#888;">ATTENDANCE</div>
+                        <div style="margin-top:15px;"><i class="fa-regular fa-clock" style="font-size:24px; color:#444;"></i><div style="font-size:18px; font-weight:bold; margin-top:5px;">45m</div><div style="font-size:10px; color:#888;">Total Tardiness</div></div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div style="font-size:11px; font-weight:bold; color:#888; text-align:left;">PARTICIPATION</div>
+                        <div class="heatmap-container">
+                            <div class="heatmap-grid">
+                                <div class="heat-box l-3" data-tooltip="Mar 9: High"></div>
+                                <div class="heat-box l-2" data-tooltip="Mar 10: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 11: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Mar 12: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="Mar 13: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 16: High"></div>
+                                <div class="heat-box l-0" data-tooltip="Mar 17: Absent"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 18: High"></div>
+                                <div class="heat-box l-2" data-tooltip="Mar 19: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 20: High"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 23: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Mar 24: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="Mar 25: Med"></div>
+                                <div class="heat-box l-2" data-tooltip="Mar 26: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 27: High"></div>
+                                <div class="heat-box l-3" data-tooltip="Mar 30: High"></div>
+                                <div class="heat-box l-0" data-tooltip="Mar 31: Absent"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 1: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 2: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Apr 3: Low"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 6: High"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 7: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Apr 8: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 9: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 10: High"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 13: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 14: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Apr 15: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 16: Med"></div>
+                                <div class="heat-box l-0" data-tooltip="Apr 17: Absent"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 20: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 21: High"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 22: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Apr 23: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 24: Med"></div>
+                                <div class="heat-box l-0" data-tooltip="Apr 27: Absent"></div>
+                                <div class="heat-box l-2" data-tooltip="Apr 28: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="Apr 29: High"></div>
+                                <div class="heat-box l-1" data-tooltip="Apr 30: Low"></div>
+                                <div class="heat-box l-3" data-tooltip="May 1: High"></div>
+                                <div class="heat-box l-3" data-tooltip="May 4: High"></div>
+                                <div class="heat-box l-3" data-tooltip="May 5: High"></div>
+                                <div class="heat-box l-1" data-tooltip="May 6: Low"></div>
+                                <div class="heat-box l-2" data-tooltip="May 7: Med"></div>
+                                <div class="heat-box l-2" data-tooltip="May 8: Med"></div>
+                                <div class="heat-box l-3" data-tooltip="May 11: High"></div>
+                                <div class="heat-box l-1" data-tooltip="May 12: Low"></div>
+                                <div class="heat-box l-0" data-tooltip="May 13: Absent"></div>
+                            </div>
+                            <div class="heat-legend">
+                                <div class="legend-item"><div class="legend-box" style="background:var(--heat-0)"></div> None</div>
+                                <div class="legend-item"><div class="legend-box" style="background:var(--heat-2)"></div> Med</div>
+                                <div class="legend-item"><div class="legend-box" style="background:var(--heat-3)"></div> High</div>
+                            </div>
+                            <div class="bimester-label">1st Bimester</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assessments -->
+                <div class="card-base">
+                    <div class="section-title">Assessments</div>
+                    <div class="grade-row"><span>Philosophy Unit 3 [Quiz]</span><span class="grade-val">18/20</span></div>
+                    <div class="grade-row"><span>Oral Presentation</span><span class="grade-val">A</span></div>
+                    <div class="grade-row"><span>Midterm Exam</span><span class="grade-val">95/100</span></div>
+                </div>
+
+                <!-- Teacher's Comments - Enhanced -->
+                <div class="card-base">
+                    <div class="section-title">Teacher's Comments</div>
+                    <div id="commentsContainer">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <div class="comments-pagination" id="commentsDots">
+                        <div class="dot active" onclick="showCommentsPage(0)"></div>
+                        <div class="dot" onclick="showCommentsPage(1)"></div>
+                        <div class="dot" onclick="showCommentsPage(2)"></div>
                     </div>
                 </div>
 
             </div>
         </div>
+    </main>
+
+    <!-- Comment Modal -->
+    <div class="modal-overlay" id="commentModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCommentModal()">&times;</button>
+            <div class="modal-title" id="modalTitle">Teacher's Comment</div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
     </div>
 
-</div>
+    <script>
+        // ========== DATA ==========
+        const faceImages = [
+            "{% static 'images/face_1.jpg' %}",
+            "{% static 'images/face_2.jpg' %}",
+            "{% static 'images/face_3.jpg' %}",
+            "{% static 'images/face_4.jpg' %}",
+            "{% static 'images/face_5.jpg' %}",
+            "{% static 'images/face_6.jpg' %}",
+            "{% static 'images/face_7.jpg' %}",
+            "{% static 'images/face_8.jpg' %}",
+            "{% static 'images/face_9.jpg' %}",
+            "{% static 'images/face_10.jpg' %}"
+        ];
 
-<script>
-    const serverStudentsData = {{ students_json| safe }};
-</script>
-<script src="{% static 'js/students-new.js' %}?v=3"></script>
-{% endblock %}
+        const firstNames = ['Maria', 'Juan', 'Carlos', 'Ana', 'Sofia', 'Miguel', 'Isabella', 'Diego', 'Valentina', 'Alejandro', 'Camila', 'Andres', 'Lucia', 'Gabriel', 'Martina', 'Sebastian', 'Emma', 'Mateo', 'Victoria', 'Nicolas', 'Renata', 'Daniel', 'Paula', 'Lucas', 'Fernanda', 'Samuel', 'Mariana'];
+        const lastNames = ['Rodriguez', 'Garcia', 'Martinez', 'Lopez', 'Hernandez', 'Gonzalez', 'Perez', 'Sanchez', 'Ramirez', 'Torres', 'Flores', 'Rivera', 'Gomez', 'Diaz', 'Reyes', 'Cruz', 'Morales', 'Ortiz', 'Gutierrez', 'Chavez', 'Ramos', 'Vargas', 'Castillo', 'Jimenez', 'Romero', 'Herrera', 'Mendoza'];
+
+        const courses = [
+            { name: 'Social Studies IVC', room: 'Room 101' },
+            { name: 'Social Studies IIIB', room: 'Room 203' },
+            { name: 'Philosophy VB', room: 'Room 305' },
+            { name: 'AP Psychology', room: 'Room 412' }
+        ];
+
+        // Generate 10 top students
+        const topStudents = [];
+        for (let i = 0; i < 10; i++) {
+            topStudents.push({
+                name: `${firstNames[i]} ${lastNames[i].charAt(0)}.`,
+                img: faceImages[i % 10]
+            });
+        }
+
+        // Generate 27 students per course (108 total)
+        const allStudents = [];
+        courses.forEach(course => {
+            for (let i = 0; i < 27; i++) {
+                allStudents.push({
+                    firstName: firstNames[i % 27],
+                    lastName: lastNames[(i + 5) % 27],
+                    course: course.name,
+                    room: course.room,
+                    img: faceImages[i % 10],
+                    grade: (85 + Math.random() * 15).toFixed(1)
+                });
+            }
+        });
+
+        // Forum messages
+        const forumMessages = [
+            { text: "Great discussion on Kant's ethics today!", author: "Sarah K.", time: "2 min ago", type: "green" },
+            { text: "Can someone share notes from yesterday?", author: "Michael R.", time: "5 min ago", type: "red" },
+            { text: "The new reading assignment is posted!", author: "Prof. Johnson", time: "10 min ago", type: "green" },
+            { text: "Study group forming for finals - Room 204", author: "David M.", time: "15 min ago", type: "green" },
+            { text: "Quiz 3 grades are now available", author: "Prof. Smith", time: "20 min ago", type: "green" },
+            { text: "Having trouble with the online portal", author: "Emma L.", time: "25 min ago", type: "red" },
+            { text: "Great presentation today, everyone!", author: "Prof. Garcia", time: "30 min ago", type: "green" }
+        ];
+
+        // Teacher comments (9 total)
+        const teacherComments = [
+            { date: "Jan 8, 2026 - 10:30 AM", text: "Maria demonstrates a deep understanding of the material. Her participation in the last seminar regarding Heidegger's 'Being and Time' was outstanding. She consistently raises thought-provoking questions that enhance class discussions.", fullText: "Maria demonstrates a deep understanding of the material. Her participation in the last seminar regarding Heidegger's 'Being and Time' was outstanding. She consistently raises thought-provoking questions that enhance class discussions. Her written work shows exceptional analytical skills and a mature grasp of philosophical concepts. I recommend she consider the advanced philosophy track next semester." },
+            { date: "Jan 5, 2026 - 2:15 PM", text: "Excellent performance on the midterm exam. Shows strong critical thinking skills and ability to synthesize complex philosophical arguments.", fullText: "Excellent performance on the midterm exam. Shows strong critical thinking skills and ability to synthesize complex philosophical arguments. Maria's essay on existentialism was particularly well-structured, demonstrating both breadth of knowledge and depth of analysis. She should be proud of this achievement." },
+            { date: "Dec 18, 2025 - 11:00 AM", text: "Great improvement in oral presentations. Much more confident and articulate compared to the beginning of the semester.", fullText: "Great improvement in oral presentations. Much more confident and articulate compared to the beginning of the semester. Maria has clearly worked hard on her public speaking skills. Her recent presentation on Nietzsche was engaging and well-researched. I encourage her to continue developing these skills." },
+            { date: "Dec 10, 2025 - 3:45 PM", text: "Submitted an outstanding research paper on ethical relativism. Well-researched and thoughtfully argued.", fullText: "Submitted an outstanding research paper on ethical relativism. Well-researched and thoughtfully argued. The paper demonstrated excellent use of primary sources and a nuanced understanding of the philosophical debate. This is graduate-level work and I've recommended it for the departmental writing award." },
+            { date: "Nov 28, 2025 - 9:30 AM", text: "Active participant in group discussions. Helps other students understand difficult concepts.", fullText: "Active participant in group discussions. Helps other students understand difficult concepts. Maria has become an informal peer tutor in our class, and several students have mentioned how helpful she has been. This collaborative spirit is commendable and speaks to her character as well as her intellect." },
+            { date: "Nov 15, 2025 - 1:00 PM", text: "Showed exceptional insight during the Socratic seminar on justice and morality.", fullText: "Showed exceptional insight during the Socratic seminar on justice and morality. Maria's contributions pushed the entire class to think more deeply about the subject matter. Her ability to connect ancient philosophical concepts to contemporary issues is remarkable for a student at this level." },
+            { date: "Nov 1, 2025 - 4:20 PM", text: "Consistently submits high-quality homework assignments ahead of deadlines.", fullText: "Consistently submits high-quality homework assignments ahead of deadlines. Maria's time management and dedication to excellence are evident in all her work. Each assignment shows careful thought and genuine engagement with the material. She sets a wonderful example for her peers." },
+            { date: "Oct 20, 2025 - 10:00 AM", text: "Wonderful contribution to the philosophy club's debate on free will.", fullText: "Wonderful contribution to the philosophy club's debate on free will. Maria represented our class with distinction, presenting compelling arguments for compatibilism. Her ability to think on her feet and respond to counterarguments was impressive. She has a bright future in academic discourse." },
+            { date: "Oct 5, 2025 - 2:30 PM", text: "Beginning of semester assessment shows strong foundational knowledge and eagerness to learn.", fullText: "Beginning of semester assessment shows strong foundational knowledge and eagerness to learn. Maria came to this class well-prepared from her previous coursework. Her enthusiasm for philosophy is infectious, and I look forward to seeing her continue to grow throughout the year." }
+        ];
+
+        // ========== VARIABLES ==========
+        let currentCommentsPage = 0;
+        let currentCourseFilter = 'all';
+
+        // ========== TOP 10 STUDENTS (All visible) ==========
+        function renderTopStudents() {
+            const container = document.getElementById('studentsCarousel');
+            
+            container.innerHTML = topStudents.map(s => `
+                <div class="student-pill">
+                    <img src="${s.img}"> 
+                    <span>${s.name}</span>
+                </div>
+            `).join('');
+        }
+
+        // ========== FORUM TICKER ==========
+        function renderForumTicker() {
+            const container = document.getElementById('forumTicker');
+            // Duplicate messages for seamless loop
+            const messages = [...forumMessages, ...forumMessages];
+            
+            container.innerHTML = messages.map(m => `
+                <div class="comment-item comment-${m.type}">
+                    "${m.text}"
+                    <span style="display:block; margin-top:6px; font-weight:bold; font-style:normal; font-size:10px; color:#888;">
+                        - ${m.author}, ${m.time}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // ========== STUDENT LIST ==========
+        function renderStudentList() {
+            const container = document.getElementById('studentListContainer');
+            let students = currentCourseFilter === 'all' 
+                ? allStudents 
+                : allStudents.filter(s => s.course === currentCourseFilter);
+            
+            container.innerHTML = students.map((s, i) => `
+                <div class="list-row ${i === 0 ? 'active' : ''}" onclick="selectStudent(${allStudents.indexOf(s)})">
+                    <img src="${s.img}" class="list-avatar">
+                    <div>
+                        <div style="font-weight:bold; font-size:14px;">${s.firstName} ${s.lastName}</div>
+                        <div style="font-size:12px; color:#666;">${s.course} | ${s.room}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterStudentsByCourse(course) {
+            currentCourseFilter = course;
+            renderStudentList();
+        }
+
+        function selectStudent(index) {
+            const student = allStudents[index];
+            document.getElementById('selectedStudentName').textContent = `${student.firstName} ${student.lastName}`;
+            document.getElementById('selectedStudentInfo').textContent = `${student.course} | Grade: ${student.grade} (A)`;
+            document.getElementById('selectedStudentImg').src = student.img;
+            
+            // Update active state
+            document.querySelectorAll('.list-row').forEach(row => row.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // ========== TEACHER COMMENTS ==========
+        function renderComments() {
+            const container = document.getElementById('commentsContainer');
+            const start = currentCommentsPage * 3;
+            const visible = teacherComments.slice(start, start + 3);
+            
+            container.innerHTML = visible.map((c, i) => `
+                <div class="comment-block">
+                    <div class="comment-header">
+                        <span><i class="fa-regular fa-calendar"></i> ${c.date}</span>
+                    </div>
+                    <div class="comment-text">"${c.text}"</div>
+                    <span class="comment-read-more" onclick="openCommentModal(${start + i})">Read More →</span>
+                </div>
+            `).join('');
+        }
+
+        function showCommentsPage(page) {
+            currentCommentsPage = page;
+            renderComments();
+            
+            // Update dots
+            document.querySelectorAll('#commentsDots .dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === page);
+            });
+        }
+
+        // ========== MODAL ==========
+        function openCommentModal(index) {
+            const comment = teacherComments[index];
+            document.getElementById('modalTitle').textContent = `Comment - ${comment.date}`;
+            document.getElementById('modalBody').textContent = comment.fullText;
+            document.getElementById('commentModal').classList.add('active');
+        }
+
+        function closeCommentModal() {
+            document.getElementById('commentModal').classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('commentModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCommentModal();
+        });
+
+        // ========== DATE/TIME UPDATE ==========
+        function updateNavDateTime() {
+            const now = new Date();
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            document.getElementById('navDate').textContent = `${day}/${month}/${year}`;
+            document.getElementById('navTime').textContent = `${hours}:${minutes}`;
+        }
+
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTopStudents();
+            renderForumTicker();
+            renderStudentList();
+            renderComments();
+            updateNavDateTime();
+            setInterval(updateNavDateTime, 60000);
+        });
+    </script>
+</body>
+</html>

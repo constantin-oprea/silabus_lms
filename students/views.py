@@ -22,7 +22,7 @@ def students_view(request):
     courses = Course.objects.all()
 
     # Get all events
-    events = Event.objects.all().order_by("event_date")
+    events = Event.objects.all().order_by("start_time")
 
     # Serialize data to JSON for JavaScript
     students_data = [student.to_profile_dict() for student in students_list]

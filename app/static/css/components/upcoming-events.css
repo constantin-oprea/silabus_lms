@@ -1,0 +1,47 @@
+/* Upcoming Events Widget Component */
+.card-transparent {
+    background: transparent !important; 
+    padding: 0 !important; 
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.event-card {
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 10px; 
+    padding: 10px;
+    background: white; 
+    border: 1px solid #eee; 
+    border-radius: 8px;
+    align-items: center;
+}
+
+.event-date {
+    background: var(--accent-glow, #e0e0e0);
+    color: var(--sidebar-bg, #333); 
+    width: 40px; 
+    height: 40px;
+    border-radius: 6px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold; 
+    line-height: 1; 
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.event-info h4 { 
+    font-size: 12px; 
+    font-weight: bold; 
+    margin-bottom: 2px;
+    color: var(--text-main, #333);
+}
+
+.event-info p { 
+    font-size: 10px; 
+    color: var(--text-muted, #888); 
+    margin: 0; 
+}

@@ -1,0 +1,197 @@
+/* ====================================
+   MY LAYOUT - PREMIUM SIDEBAR STYLES
+   Glassmorphism Design with Active/Inactive States
+   ==================================== */
+
+:root {
+    --forest-green: #345B49;
+    --forest-green-dark: #264235;
+    --lime-green: #CCFF00;
+    --neon-lime: #aeea00;
+    --sidebar-width: 80px;
+}
+
+/* Sidebar Container - Premium Gradient */
+.my-layout-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #345B49 0%, #264235 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Logo Section at Top */
+.sidebar-logo {
+    padding: 20px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo-image {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.logo-tagline {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Navigation Section */
+.sidebar-nav {
+    flex: 1;
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+}
+
+/* Navigation Items - Base State */
+.my-layout-sidebar .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 8px;
+    margin: 0 10px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Inactive State */
+.my-layout-sidebar .nav-item.inactive {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.my-layout-sidebar .nav-item.inactive:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover State (Active Links) */
+.my-layout-sidebar .nav-item:not(.inactive):hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Active State - Glassmorphism Effect */
+.my-layout-sidebar .nav-item.active {
+    background: rgba(174, 234, 0, 0.15);
+    color: var(--neon-lime);
+    backdrop-filter: blur(10px);
+    border-left: 3px solid var(--neon-lime);
+    box-shadow: 0 0 20px rgba(174, 234, 0, 0.2),
+                inset 0 0 30px rgba(174, 234, 0, 0.05);
+}
+
+.my-layout-sidebar .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--neon-lime);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 10px var(--neon-lime);
+}
+
+/* Icon Styling */
+.my-layout-sidebar .nav-item i {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.my-layout-sidebar .nav-item.active i {
+    filter: drop-shadow(0 0 4px rgba(174, 234, 0, 0.5));
+}
+
+/* Label Styling */
+.my-layout-sidebar .nav-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+}
+
+/* Bottom Section (Logout) */
+.sidebar-bottom {
+    padding: 15px 0 25px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-bottom .nav-item {
+    opacity: 0.7;
+}
+
+.sidebar-bottom .nav-item:hover {
+    opacity: 1;
+    background: rgba(255, 100, 100, 0.1);
+    color: #ff8a80;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .my-layout-sidebar {
+        width: 60px;
+    }
+    
+    .logo-text {
+        display: none;
+    }
+    
+    .my-layout-sidebar .nav-label {
+        font-size: 8px;
+    }
+    
+    .my-layout-sidebar .nav-item {
+        padding: 12px 6px;
+        margin: 0 6px;
+    }
+}
+
+/* Scroll styling for nav */
+.sidebar-nav::-webkit-scrollbar {
+    width: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
